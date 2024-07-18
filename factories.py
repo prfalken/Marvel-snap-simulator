@@ -1,5 +1,5 @@
 from card import Card, Ability
-from cards import Abomination, Cyclops, Medusa, Sentinel
+import cards
 from loguru import logger
 
 def generate_all_cards():
@@ -18,21 +18,20 @@ def generate_all_cards():
         return 0
 
     punisher_ability = Ability(punisher_effect, "Ongoing")
-    sentinel_ability = Ability(sentinel_effect, "On Reveal")
     star_lord_ability = Ability(star_lord_effect, "On Reveal")
 
 
     all_cards = [
-        Abomination(),
-        Cyclops(),
-        Card("Hawkeye", 1, 1, "On Reveal: If you play a card here next turn, +2 Power."),
-        Card("Hulk", 6, 12, "No ability"),
+        cards.Abomination(),
+        cards.Cyclops(),
+        cards.Hawkeye(),
+        cards.Hulk(),
         Card("Iron Man", 5, 0, "Ongoing: Your total Power is doubled at this Location."),
-        Medusa(),
+        cards.Medusa(),
         Card("Misty Knight", 1, 2, "No ability"),
         Card("The Punisher", 3, 2, "Ongoing: +1 Power for each opposing card at this Location.", punisher_ability),
         Card("Quicksilver", 1, 2, ""),
-        Sentinel(),
+        cards.Sentinel(),
         Card("Shocker", 2, 3, "No ability"),
         Card("Star Lord", 2, 2, "On Reveal: If your opponent played a card here this turn, +3 Power.", star_lord_ability),
         Card("The Thing", 4, 6, "No ability"),

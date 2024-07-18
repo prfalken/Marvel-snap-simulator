@@ -13,7 +13,7 @@ class Card:
         self.turn_played = 0
         self.location = None
         self.location_effect_applied = False  # Add this flag
-        self.hawkeye_effect_applied = False  # Add this flag for Hawkeye cards only
+        self.revealed = False
 
     def reveal(self, game, owner: AIPlayer, location):
         return game, owner, location

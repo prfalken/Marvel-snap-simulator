@@ -19,6 +19,42 @@ class Cyclops(Card):
         self.base_power = 4
         self.ability_description = "No Ability"
 
+class Hulk(Card):
+    def __init__(self):
+        Card.__init__(self)
+        self.name = "Hulk"
+        self.energy_cost = 6
+        self.power = 12
+        self.base_power = 12
+        self.ability_description = "No Ability"
+
+class Hawkeye(Card):
+    def __init__(self):
+        Card.__init__(self)
+        self.name = "Hawkeye"
+        self.energy_cost = 1
+        self.power = 1
+        self.base_power = 1
+        self.ability_description = "On Reveal: If you play a card here next turn, +2 Power."
+        self.number_of_cards_here = 0
+        self.hawkeye_triggered = False
+
+    def reveal(self, game, owner: AIPlayer, location):
+        if not self.revealed:
+            self.revealed = True
+            self.turn_played = game.current_turn
+            self.number_of_cards_here = len(location.cards)
+            return game, owner, location
+
+        if self.revealed and not self.hawkeye_triggered and game.current_turn == self.turn_played + 1:
+            if len(location.cards) > self.number_of_cards_here:
+                self.power += 2
+                logger.debug(f"{self.name} was played last turn. Power +2")
+                self.hawkeye_triggered = True
+                return game, owner, location
+            
+        return game, owner, location
+
 
 class Medusa(Card):
     def __init__(self):

@@ -8,9 +8,17 @@ from loguru import logger
 class TestCards(unittest.TestCase):
 
     def setUp(self):
-        self.game = Game()
-        self.player = self.game.players[0]
         self.all_cards = factories.generate_all_cards()
+        self.game = Game()
+
+        self.game.players[1].hand = []
+        self.game.players[1].deck = []
+        self.game.players[0].deck = []
+        self.player = self.game.players[0]
+
+    def clear_locations(self):
+        for location in self.game.locations:
+            location.cards = []
 
     def test_abomination(self):
         abo = cards.Abomination()
@@ -30,8 +38,89 @@ class TestCards(unittest.TestCase):
         assert cyc.base_power == 4
         assert cyc.ability_description == "No Ability"
 
-    def test_Medusa(self):
+    def test_hawkeye_triggered(self):
+        self.clear_locations()
 
+        # Create a Hawkeye card
+        hawkeye = Card()
+        location_id = 0
+        for card in self.all_cards:
+            if card.name == "Hawkeye":
+                hawkeye = card
+        hawkeye.energy_cost = 1
+
+        # Add Hawkeye to player's hand
+        self.player.hand = []
+        self.player.hand.append(hawkeye)
+
+        self.game.play_card(hawkeye, self.player.player_id, location_id)
+        self.game.reveal_cards(self.player.player_id)
+
+        self.game.current_turn += 1
+        self.player.energy = 1
+
+        some_card = Card("Some Card", 1, 1, "No Ability")
+        some_card.energy_cost = 1
+        self.player.hand.append(some_card)
+        self.game.play_card(some_card, self.player.player_id, location_id)
+        self.game.reveal_cards(self.player.player_id)
+
+        # Get the played Hawkeye card from the location
+        played_hawkeye = None
+        for card in self.game.locations[location_id].cards:
+            if card.name == "Hawkeye":
+                played_hawkeye = card
+
+        self.assertEqual(played_hawkeye.power, 3)
+ 
+    def test_hawkeye_not_triggered(self):
+        self.clear_locations()
+
+        # Create a Hawkeye card
+        hawkeye = Card()
+        location_id = 0
+        for card in self.all_cards:
+            if card.name == "Hawkeye":
+                hawkeye = card
+        hawkeye.energy_cost = 1
+
+        # Add Hawkeye to player's hand
+        self.player.hand = []
+        self.player.hand.append(hawkeye)
+
+        self.game.play_card(hawkeye, self.player.player_id, location_id)
+        self.game.reveal_cards(self.player.player_id)
+
+        self.game.current_turn += 1
+        self.player.energy = 1
+
+        # play a card in another location - Hawkeye should not trigger
+        some_card = Card("Some Card", 1, 1, "No Ability")
+        some_card.energy_cost = 1
+        self.player.hand.append(some_card)
+        self.game.play_card(some_card, self.player.player_id, location_id + 1)
+        self.game.reveal_cards(self.player.player_id)
+
+
+        # Get the played Hawkeye card from the location
+        played_hawkeye = None
+        for card in self.game.locations[location_id].cards:
+            if card.name == "Hawkeye":
+                played_hawkeye = card
+
+        self.assertEqual(played_hawkeye.power, 1)
+
+
+    def test_hulk(self):
+        hulk = cards.Hulk()
+        assert hulk.name == "Hulk"
+        assert hulk.energy_cost == 6
+        assert hulk.power == 12
+        assert hulk.base_power == 12
+        assert hulk.ability_description == "No Ability"
+
+    def test_Medusa(self):
+        self.clear_locations()
         # Create a Medusa card
         medusa = Card()
         location_id = 1
@@ -57,6 +146,8 @@ class TestCards(unittest.TestCase):
         self.assertEqual(played_medusa.power, 4)
 
     def test_Sentinel(self):
+        self.clear_locations()
+
         # Create a Sentinel card
         sentinel = Card()
         location_id = 0

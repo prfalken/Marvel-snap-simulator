@@ -62,14 +62,6 @@ class Game:
             # Update the player's turn_energy_spent
             player.turn_energy_spent += card.energy_cost
 
-        # Check for Hawkeye cards and apply the effect if necessary
-            hawkeye_cards = [c for c in location.cards if c.name == "Hawkeye" and c.turn_played == self.current_turn - 1 and not c.hawkeye_effect_applied and c.location == location_number]
-            if hawkeye_cards:
-                for hawkeye_card in hawkeye_cards:
-                    last_played_card = location.cards[-1]
-                    if last_played_card.owner == hawkeye_card.owner and last_played_card.turn_played == self.current_turn:
-                        hawkeye_card.power += 2  # Apply the effect
-                        hawkeye_card.hawkeye_effect_applied = True  # Set the flag after applying the effect
         else:
             logger.debug(f"Player {player_id} cannot play {card.name} yet. It costs more energy than the current turn.")
             return
@@ -289,7 +281,7 @@ class Game:
             self.play_turn()
             self.apply_ongoing_abilities()
             self.end_of_turn()
-            self.display_game_state()
+            # self.display_game_state()
 
         self.determine_winner()
 
