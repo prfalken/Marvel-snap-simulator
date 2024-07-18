@@ -14,6 +14,7 @@ class Location:
         self.player1_played_card = False
         self.player2_played_card = False
         self.revealed = False
+        self.position = None
 
     def __str__(self):
         return f"{self.name} (Effect: {self.effect_description})"

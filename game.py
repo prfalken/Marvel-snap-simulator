@@ -73,7 +73,7 @@ class Game:
         location = self.locations[self.current_location]
         logger.debug(f"Location revealed: {location}")
         location.revealed = True
-
+        location.position = self.current_location
         self.current_location += 1
         location.apply_location_effect(self)
 

@@ -1,6 +1,8 @@
 from card import Card
 from loguru import logger
 from ai import AIPlayer
+from game import Game
+from location import Location
 class Abomination(Card):
     def __init__(self):
         Card.__init__(self)
@@ -39,7 +41,7 @@ class Hawkeye(Card):
         self.number_of_cards_here = 0
         self.hawkeye_triggered = False
 
-    def reveal(self, game, owner: AIPlayer, location):
+    def reveal(self, game: Game, owner: AIPlayer, location: Location):
         if not self.revealed:
             self.revealed = True
             self.turn_played = game.current_turn
@@ -65,7 +67,7 @@ class Medusa(Card):
         self.base_power = 2
         self.ability_description = "On Reveal: If this is at the middle Location, +2 Power."
 
-    def reveal(self, game, owner: AIPlayer, location):
+    def reveal(self, game: Game, owner: AIPlayer, location: Location):
         if self.location == 1:
             logger.debug(f"{self.name} is at the middle location. Power +2")
             self.power += 2

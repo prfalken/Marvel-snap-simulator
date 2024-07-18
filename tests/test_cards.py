@@ -127,6 +127,7 @@ class TestCards(unittest.TestCase):
         for card in self.all_cards:
             if card.name == "Medusa":
                 medusa = card
+                break
         medusa.energy_cost = 1
 
         # Add Medusa to player's hand
