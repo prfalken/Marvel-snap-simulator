@@ -4,9 +4,9 @@ import copy
 
 
 class AIPlayer:
-    def __init__(self, game, player_number, all_cards):
+    def __init__(self, game, player_id, all_cards):
         self.game = game
-        self.player_number = player_number + 1
+        self.player_id = player_id
         self.location_powers = [0, 0, 0]
         self.turn_energy_spent = 0
         self.energy = 1

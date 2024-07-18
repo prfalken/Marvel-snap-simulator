@@ -21,12 +21,12 @@ class Location:
     def __repr__(self):
         return f"{self.name} (Effect: {self.effect_description})"
     
-    def calculate_total_power(self, player_number):
-        total_power = sum(card.power for card in self.cards if card.owner == player_number)
-        card_list = [(card.name, card.power) for card in self.cards if card.owner == player_number]
+    def calculate_total_power(self, player_id):
+        total_power = sum(card.power for card in self.cards if card.owner == player_id)
+        card_list = [(card.name, card.power) for card in self.cards if card.owner == player_id]
         card_list.clear()
         for card in self.cards:
-            if card.name == "Iron Man" and card.owner == player_number:
+            if card.name == "Iron Man" and card.owner == player_id:
                 total_power *= 2
         return total_power
 

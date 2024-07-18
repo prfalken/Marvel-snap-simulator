@@ -45,21 +45,22 @@ class TestGame(unittest.TestCase):
     def test_play_card(self):
         game = Game()
         card = Card("Card 1", 1, 1)
-        player_number = 1
+        player_id = 0
         location_number = 0
-        player = game.players[player_number - 1]
+        player = game.players[player_id]
         player.hand.append(card)
 
         # Test playing a card with sufficient energy
-        game.play_card(card, player_number, location_number)
+        game.play_card(card, player_id, location_number)
         self.assertEqual(len(game.locations[location_number].cards), 1)
         self.assertEqual(player.energy, 0)
 
         # Test playing a card with insufficient energy
         card2 = Card("Card 2", 10)
-        game.play_card(card2, player_number, location_number)
+        player.hand.append(card2)
+        game.play_card(card2, player_id, location_number)
         self.assertEqual(len(game.locations[location_number].cards), 1)
-        self.assertEqual(game.players[player_number - 1].energy, 0)
+        self.assertEqual(game.players[player_id].energy, 0)
 
     def test_reveal_location(self):
         game = Game()
@@ -77,9 +78,7 @@ class TestGame(unittest.TestCase):
         game.players[0].hand = [Card("Card 2", 1, 100)]
         game.reveal_cards = MagicMock()
         game.play_turn()
-        game.reveal_cards.assert_called_with(2)
-
-        
+        game.reveal_cards.assert_called_with(1)     
 
     def test_reveal_cards(self):
         game = Game()
@@ -116,16 +115,16 @@ class TestGame(unittest.TestCase):
     def test_play_card_insufficient_energy(self):
         game = Game()
         card = Card("Card 1", 5)
-        player_number = 1
+        player_id = 0
         location_number = 0
 
         # Set player's energy to 0
-        game.players[player_number - 1].energy = 0
+        game.players[player_id].energy = 0
 
         # Test playing a card with insufficient energy
-        game.play_card(card, player_number, location_number)
+        game.play_card(card, player_id, location_number)
         self.assertEqual(len(game.locations[location_number].cards), 0)
-        self.assertEqual(game.players[player_number - 1].energy, 0)
+        self.assertEqual(game.players[player_id].energy, 0)
 
     def test_reveal_location_multiple_times(self):
         game = Game()

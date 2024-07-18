@@ -7,6 +7,17 @@ from factories import generate_all_cards
 
 from loguru import logger
 
+from enum import Enum
+
+class Winner(Enum):
+    PLAYER1 = 0
+    PLAYER2 = 1
+    DRAW = 2
+
+class PlayerIDs(Enum):
+    PLAYER1 = 0
+    PLAYER2 = 1
+
 class Game:
     def __init__(self):
         self.current_turn = 1
@@ -19,26 +30,26 @@ class Game:
         self.prepare_game()
         self.winner=2
 
-    def play_card(self, card, player_number, location_number):
-        player = self.players[player_number - 1]
+    def play_card(self, card, player_id, location_number):
+        player = self.players[player_id]
         location = self.locations[location_number]
         card_copy = copy.deepcopy(card)
-        card_copy.owner = player_number - 1
+        card_copy.owner = player_id
         card_copy.turn_played = self.current_turn
         card_copy.location = location_number
 
         # Ensuring the location does not already have 4 cards from the player.
-        if sum(1 for card in location.cards if card.owner == player_number - 1) >= 4:
-            logger.debug(f"Player {player_number} cannot play {card.name} at this location. It already has 4 cards from the player.")
+        if sum(1 for card in location.cards if card.owner == player_id) >= 4:
+            logger.debug(f"Player {player_id+1} cannot play {card.name} at this location. It already has 4 cards from the player.")
             return
 
         if card.energy_cost <= player.energy:
-            card_copy.owner = player_number - 1
+            card_copy.owner = player_id
             card_copy.location = location_number
             location.cards.append(card_copy)
-            logger.debug(f"Card played by player {player_number}: {card_copy}")
+            logger.debug(f"Card played by player {player_id+1}: {card_copy}")
 
-            if player_number == 1:
+            if player_id == PlayerIDs.PLAYER1.value:
                 location.player1_played_card = True
             else:
                 location.player2_played_card = True
@@ -60,7 +71,7 @@ class Game:
                         hawkeye_card.power += 2  # Apply the effect
                         hawkeye_card.hawkeye_effect_applied = True  # Set the flag after applying the effect
         else:
-            logger.debug(f"Player {player_number} cannot play {card.name} yet. It costs more energy than the current turn.")
+            logger.debug(f"Player {player_id} cannot play {card.name} yet. It costs more energy than the current turn.")
             return
 
     def reveal_location(self):
@@ -82,7 +93,9 @@ class Game:
         self.reveal_location()
 
     def play_turn(self):
-        for player_number, player in enumerate(self.players, 1):
+        for player_id in PlayerIDs:
+            player_id = player_id.value
+            player = self.players[player_id]
             player.played_cards = []
             player.played_card_locations = []
 
@@ -92,11 +105,11 @@ class Game:
                 for card_index, location_index in zip(chosen_card_indices, location_indices):
                     card = player.hand[card_index]
                     if card.energy_cost <= player.energy:
-                        self.play_card(card, player_number, location_index)
+                        self.play_card(card, player_id, location_index)
                         player.played_cards.append(card)
                         player.played_card_locations.append(location_index)
                     else:
-                        logger.debug(f"Player {player_number} cannot play {card.name} yet. It costs more energy than the current turn.")
+                        logger.debug(f"{player_id+1} cannot play {card.name} yet. It costs more energy than the current turn.")
                         break
             else:
                 break
@@ -111,30 +124,30 @@ class Game:
                 player2_wins += 1
 
         if player1_wins > player2_wins:
-            reveal_order = [1, 2]
+            reveal_order = [0, 1]
         elif player1_wins < player2_wins:
-            reveal_order = [2, 1]
+            reveal_order = [1, 0]
         else:
             player1_total_power = sum(location.calculate_total_power(0) for location in self.locations)
             player2_total_power = sum(location.calculate_total_power(1) for location in self.locations)
             if player1_total_power >= player2_total_power:
-                reveal_order = [1, 2]
+                reveal_order = [0, 1]
             else:
-                reveal_order = [2, 1]
+                reveal_order = [1, 0]
 
         # Reveal cards and apply card and location effects in the determined order
-        for player_number in reveal_order:
-            self.reveal_cards(player_number)
+        for player_id in reveal_order:
+            self.reveal_cards(player_id)
 
-    def reveal_cards(self, player_number):
-        player = self.players[player_number - 1]
+    def reveal_cards(self, player_id):
+        player = self.players[player_id]
         if player.played_cards:
             for card in player.played_cards:
                 if card.location is not None:
                     location = self.locations[card.location]
                     location_card = next((c for c in location.cards if c.owner == card.owner and c.name == card.name and c.location == card.location), None)
                     if card.ability is not None and card.ability.ability_type == "On Reveal":
-                        power_bonus = card.ability.effect(card, self, player_number - 1, location)
+                        power_bonus = card.ability.effect(card, self, player_id, location)
                         if power_bonus is not None and power_bonus > 0:
                             card.power += power_bonus
                             # Update the location card's power value as well
@@ -143,20 +156,21 @@ class Game:
                             logger.debug("Card: ", card.name, "Has increased from ", card.base_power, "to ", card.power)
 
     def apply_ongoing_abilities(self):
-        for player_number in range(1, 3):
+        for player_id in PlayerIDs:
+            player_id = player_id.value
             for location in self.locations:
                 for card in location.cards:
-                    if card.owner == player_number - 1 and card.ability is not None and card.ability.ability_type == "Ongoing":
-                        card.ability.effect(card, self, player_number - 1, location)
-            self.apply_location_effects(player_number)
+                    if card.owner == player_id and card.ability is not None and card.ability.ability_type == "Ongoing":
+                        card.ability.effect(card, self, player_id, location)
+            self.apply_location_effects(player_id)
 
 
-    def apply_location_effects(self, player_number):
-        player = self.players[player_number - 1]
+    def apply_location_effects(self, player_id):
+        player = self.players[player_id]
         for location_index, location in enumerate(self.locations):
             if location.effect and location.revealed:
                 for card in location.cards:
-                    if card.owner == player_number and not card.location_effect_applied:
+                    if card.owner == player_id and not card.location_effect_applied:
                         location.effect(card, player, location_index)  # Pass location_index instead of location
                         card.location_effect_applied = True  # Set the flag after applying the effect
 
