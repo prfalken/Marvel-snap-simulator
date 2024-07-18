@@ -1,10 +1,11 @@
 import random
 import copy
-from card import Card, generate_all_cards
 from location import Location, generate_all_locations
 from ai import AIPlayer
 from data import update_deck_data, save_deck_data, load_deck_data, get_average_power
-import json
+from factories import generate_all_cards
+
+from loguru import logger
 
 class Game:
     def __init__(self):
@@ -28,13 +29,14 @@ class Game:
 
         # Ensuring the location does not already have 4 cards from the player.
         if sum(1 for card in location.cards if card.owner == player_number - 1) >= 4:
-            #print(f"Player {player_number} cannot play {card.name} at this location. It already has 4 cards from the player.")
+            logger.debug(f"Player {player_number} cannot play {card.name} at this location. It already has 4 cards from the player.")
             return
 
         if card.energy_cost <= player.energy:
             card_copy.owner = player_number - 1
             card_copy.location = location_number
             location.cards.append(card_copy)
+            logger.debug(f"Card played by player {player_number}: {card_copy}")
 
             if player_number == 1:
                 location.player1_played_card = True
@@ -58,7 +60,7 @@ class Game:
                         hawkeye_card.power += 2  # Apply the effect
                         hawkeye_card.hawkeye_effect_applied = True  # Set the flag after applying the effect
         else:
-            #print(f"Player {player_number} cannot play {card.name} yet. It costs more energy than the current turn.")
+            logger.debug(f"Player {player_number} cannot play {card.name} yet. It costs more energy than the current turn.")
             return
 
     def reveal_location(self):
@@ -66,6 +68,7 @@ class Game:
             return
 
         location = self.locations[self.current_location]
+        logger.debug(f"Location revealed: {location}")
         location.revealed = True
 
         self.current_location += 1
@@ -93,7 +96,7 @@ class Game:
                         player.played_cards.append(card)
                         player.played_card_locations.append(location_index)
                     else:
-                        #print(f"Player {player_number} cannot play {card.name} yet. It costs more energy than the current turn.")
+                        logger.debug(f"Player {player_number} cannot play {card.name} yet. It costs more energy than the current turn.")
                         break
             else:
                 break
@@ -137,11 +140,10 @@ class Game:
                             # Update the location card's power value as well
                             if location_card is not None:
                                 location_card.power = card.power  # Update the power of the card in location.cards
-                            #print("Card: ", card.name, "Has increased from ", card.base_power, "to ", card.power)
+                            logger.debug("Card: ", card.name, "Has increased from ", card.base_power, "to ", card.power)
 
     def apply_ongoing_abilities(self):
         for player_number in range(1, 3):
-            player = self.players[player_number - 1]
             for location in self.locations:
                 for card in location.cards:
                     if card.owner == player_number - 1 and card.ability is not None and card.ability.ability_type == "Ongoing":
@@ -179,7 +181,6 @@ class Game:
 
     def display_game_state(self):
         print("\nCards at each location:")
-        print("Player 1 (above) / Player 2 (below)")
 
         player1_cards_by_location = []
         player2_cards_by_location = []
@@ -187,7 +188,6 @@ class Game:
         for location in self.locations:
             player1_power = location.calculate_total_power(0)
             player2_power = location.calculate_total_power(1)
-            location_index = self.locations.index(location)
             player1_cards = [f"{card.name} ({card.power})" for card in location.cards if card.owner == 0]
             player2_cards = [f"{card.name} ({card.power})" for card in location.cards if card.owner == 1]
 
@@ -195,28 +195,23 @@ class Game:
             player1_cards += [''] * (max_cards - len(player1_cards))
             player2_cards += [''] * (max_cards - len(player2_cards))
 
+            if location.revealed:
+                print(f"\n{location.name} - {location.effect_description}")
+            else:
+                print(f"\nUnrevealed Location")
+            print(f"Player 1: {player1_cards}")
+            print(f"Player 2: {player2_cards}")
+            loc_winner = location.determine_winner()
+            if loc_winner == 0:
+                print(f"Player 1 wins this location")
+            elif loc_winner == 1:
+                print(f"Player 2 wins this location")
+
             player1_cards_by_location.append(player1_cards + [f"Player 1 Power: {player1_power}"])
             player2_cards_by_location.append(player2_cards + [f"Player 2 Power: {player2_power}"])
 
         max_rows = max(len(cards) for cards in player1_cards_by_location + player2_cards_by_location)
-
-        for row in range(max_rows):
-            for player1_cards in player1_cards_by_location:
-                print("{:^25}".format(player1_cards[row] if row < len(player1_cards) else ""), end=" ")
-            print()
-
-        for location in self.locations:
-            if location.revealed:
-                print("{:^25}".format(location.name), end=" ")
-            else:
-                print("{:^25}".format("???"), end=" ")
-        print()
-
-        for row in range(max_rows):
-            for player2_cards in player2_cards_by_location:
-                print("{:^25}".format(player2_cards[row] if row < len(player2_cards) else ""), end=" ")
-            print()
-
+    
         # Display decks and hands of both players
         print("\nPlayer 1 deck and hand:")
         print("Deck:", [f"{card.name} ({card.power})" for card in self.players[0].deck])
@@ -231,8 +226,8 @@ class Game:
     def determine_winner(self):
         player1_score = sum(location.calculate_total_power(0) for location in self.locations)
         player2_score = sum(location.calculate_total_power(1) for location in self.locations)
-        #print("Player 1 had a total power of:", player1_score)
-        #print("Player 2 had a total power of:", player2_score)
+        logger.debug(f"Player 1 had a total power of {player1_score}")
+        logger.debug(f"Player 2 had a total power of {player2_score}")
         player1_wins = 0
         player2_wins = 0
         for location in self.locations:
@@ -241,30 +236,45 @@ class Game:
             elif location.calculate_total_power(0) < location.calculate_total_power(1):
                 player2_wins += 1
 
+        logger.debug(f"Total won locations for Player 1: {player1_wins}")
+        logger.debug(f"Total won locations for Player 2: {player2_wins}")
+
         decks_data = load_deck_data('decks_data.json')
         if player1_wins > player2_wins:
-            #print("Player 1 Wins!")
+            logger.debug("Player 1 Wins!")
             update_deck_data(self.players[0].starting_deck, "win", player1_score, decks_data)
             update_deck_data(self.players[1].starting_deck, "loss", player2_score, decks_data)
 
         elif player1_wins < player2_wins:
-            #print("Player 2 Wins!")
+            logger.debug("Player 2 Wins!")
             update_deck_data(self.players[0].starting_deck, "loss", player1_score, decks_data)
             update_deck_data(self.players[1].starting_deck, "win", player2_score, decks_data)
 
         save_deck_data(decks_data, 'decks_data.json')
 
+        if player1_wins > player2_wins:
+            self.winner = 0
+        elif player2_wins > player1_wins:
+            self.winner = 1
+        elif player1_score > player2_score:
+            self.winner = 0        
+        elif player2_score > player1_score:
+            self.winner = 1
+        else:
+            self.winner = 2
+
+        logger.info(f"Player {self.winner + 1} wins!")
 
     def play_game(self):
         for turn in range(6):  # Loop through the 6 turns
             self.current_turn = turn + 1
-            #print(f"Turn {self.current_turn}")
+            logger.info(f"Turn {self.current_turn}")
             if 4 > self.current_turn > 1:
                 self.reveal_location()
             self.play_turn()
             self.apply_ongoing_abilities()
             self.end_of_turn()
-            #self.display_game_state()
+            self.display_game_state()
 
         self.determine_winner()
 
