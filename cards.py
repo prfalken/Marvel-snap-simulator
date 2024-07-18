@@ -1,5 +1,6 @@
 from card import Card
-
+from loguru import logger
+from ai import AIPlayer
 class Abomination(Card):
     def __init__(self):
         Card.__init__(self)
@@ -28,8 +29,23 @@ class Medusa(Card):
         self.base_power = 2
         self.ability_description = "On Reveal: If this is at the middle Location, +2 Power."
 
-    def on_reveal(self, game, card_owner, location_index):
-        if location_index == 1:
-            return 2
-        return 0
+    def reveal(self, game, owner: AIPlayer, location):
+        if self.location == 1:
+            logger.debug(f"{self.name} is at the middle location. Power +2")
+            self.power += 2
+        return game, owner, location
     
+class Sentinel(Card):
+    def __init__(self):
+        Card.__init__(self)
+        self.name = "Sentinel"
+        self.energy_cost = 2
+        self.power = 3
+        self.base_power = 3
+        self.ability_description = "On Reveal: Add another Sentinel to your hand."
+
+    def reveal(self, game, owner: AIPlayer, location):
+        new_sentinel = Sentinel()
+        owner.hand.append(new_sentinel)
+        logger.debug(f"Player {owner.player_id+1} added another Sentinel to their hand.")
+        return game, owner, location

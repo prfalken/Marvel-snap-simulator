@@ -3,6 +3,7 @@ from ai import AIPlayer
 class Card:
     def __init__(self, name=None, energy_cost=None, power=None, ability_description=None, ability=None):
         self.name = name
+        self.game = None
         self.energy_cost = energy_cost
         self.power = power
         self.base_power = power
@@ -14,8 +15,8 @@ class Card:
         self.location_effect_applied = False  # Add this flag
         self.hawkeye_effect_applied = False  # Add this flag for Hawkeye cards only
 
-    def on_reveal(self):
-        pass
+    def reveal(self, game, owner: AIPlayer, location):
+        return game, owner, location
 
     def ongoing(self):
         pass
