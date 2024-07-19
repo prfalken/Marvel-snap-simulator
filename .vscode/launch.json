@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "name": "Main Debugger",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py"
+        }
+    ]
+}

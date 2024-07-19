@@ -186,8 +186,10 @@ class Game:
             for player_id in PlayerIDs:
                 location.powers[player_id.value] = location.calculate_total_power(player_id.value)
 
+        self.apply_ongoing_abilities()
+
     def display_game_state(self):
-        print("\nCards at each location:")
+        logger.debug("\nCards at each location:")
 
         player1_cards_by_location = []
         player2_cards_by_location = []
@@ -203,19 +205,19 @@ class Game:
             player2_cards += [''] * (max_cards - len(player2_cards))
 
             if location.revealed:
-                print(f"\n{location.name} - {location.effect_description}")
+                logger.debug(f"\n{location.name} - {location.effect_description}")
             else:
-                print(f"\nUnrevealed Location")
-            print(f"Player 1: {player1_cards}")
-            print(f"Player 2: {player2_cards}")
+                logger.debug(f"\nUnrevealed Location")
+            logger.debug(f"Player 1: {player1_cards}")
+            logger.debug(f"Player 2: {player2_cards}")
 
             loc_winner = location.determine_winner()
             if loc_winner == 0:
-                print(f"Player 1 wins this location")
+                logger.debug(f"Player 1 wins this location")
             elif loc_winner == 1:
-                print(f"Player 2 wins this location")
+                logger.debug(f"Player 2 wins this location")
 
-            print(location.powers)
+            logger.debug(location.powers)
 
             player1_cards_by_location.append(player1_cards + [f"Player 1 Power: {player1_power}"])
             player2_cards_by_location.append(player2_cards + [f"Player 2 Power: {player2_power}"])
@@ -223,21 +225,16 @@ class Game:
         max_rows = max(len(cards) for cards in player1_cards_by_location + player2_cards_by_location)
     
         # Display decks and hands of both players
-        print("\nPlayer 1 deck and hand:")
-        print("Deck:", [f"{card.name} ({card.power})" for card in self.players[0].deck])
-        print("Hand:", [f"{card.name} ({card.power})" for card in self.players[0].hand])
-        print("\n")
-        print("Player 2 deck and hand:")
-        print("Deck:", [f"{card.name} ({card.power})" for card in self.players[1].deck])
-        print("Hand:", [f"{card.name} ({card.power})" for card in self.players[1].hand])
-        print("\n")
-
+        logger.debug("Player 1 Deck:", [f"{card.name} ({card.power})" for card in self.players[0].deck])
+        logger.debug("Player 1 Hand:", [f"{card.name} ({card.power})" for card in self.players[0].hand])
+        logger.debug("Player 2 Deck:", [f"{card.name} ({card.power})" for card in self.players[1].deck])
+        logger.debug("Player 2 Hand:", [f"{card.name} ({card.power})" for card in self.players[1].hand])
 
     def determine_winner(self):
         player1_score = sum(location.calculate_total_power(0) for location in self.locations)
         player2_score = sum(location.calculate_total_power(1) for location in self.locations)
-        logger.debug(f"Player 1 had a total power of {player1_score}")
-        logger.debug(f"Player 2 had a total power of {player2_score}")
+        logger.info(f"Player 1 had a total power of {player1_score}")
+        logger.info(f"Player 2 had a total power of {player2_score}")
         player1_wins = 0
         player2_wins = 0
         for location in self.locations:
@@ -246,17 +243,17 @@ class Game:
             elif location.calculate_total_power(0) < location.calculate_total_power(1):
                 player2_wins += 1
 
-        logger.debug(f"Total won locations for Player 1: {player1_wins}")
-        logger.debug(f"Total won locations for Player 2: {player2_wins}")
+        logger.info(f"Total won locations for Player 1: {player1_wins}")
+        logger.info(f"Total won locations for Player 2: {player2_wins}")
 
         decks_data = load_deck_data('decks_data.json')
         if player1_wins > player2_wins:
-            logger.debug("Player 1 Wins!")
+            logger.info("Player 1 Wins!")
             update_deck_data(self.players[0].starting_deck, "win", player1_score, decks_data)
             update_deck_data(self.players[1].starting_deck, "loss", player2_score, decks_data)
 
         elif player1_wins < player2_wins:
-            logger.debug("Player 2 Wins!")
+            logger.info("Player 2 Wins!")
             update_deck_data(self.players[0].starting_deck, "loss", player1_score, decks_data)
             update_deck_data(self.players[1].starting_deck, "win", player2_score, decks_data)
 
@@ -282,7 +279,6 @@ class Game:
             if 4 > self.current_turn > 1:
                 self.reveal_location()
             self.play_turn()
-            self.apply_ongoing_abilities()
             self.end_of_turn()
             self.display_game_state()
 

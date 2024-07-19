@@ -37,6 +37,6 @@ def generate_all_cards():
         Card("The Thing", 4, 6, "No ability"),
     ]
 
-    sentinel_card = next(card for card in all_cards if card.name == "Sentinel")
+    # sentinel_card = next(card for card in all_cards if card.name == "Sentinel")
 
     return all_cards
