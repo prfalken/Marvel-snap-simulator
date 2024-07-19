@@ -1,7 +1,8 @@
 import random
+from enums import PlayerIDs
 
 class Location:
-    def __init__(self, name, effect_description, effect=None, on_reveal_effect=None, no_destroy=None, can_play_card=None, end_of_turn_effect=None):
+    def __init__(self, name, effect_description, effect=None, on_reveal_effect=None, no_destroy=None, can_play_card=None, end_of_turn_effect=None, position=None):
         self.name = name
         self.effect_description = effect_description
         self.effect = effect
@@ -14,7 +15,11 @@ class Location:
         self.player1_played_card = False
         self.player2_played_card = False
         self.revealed = False
-        self.position = None
+        self.position = position
+        self.powers = {
+            PlayerIDs.PLAYER1.value: 0,
+            PlayerIDs.PLAYER2.value: 0
+        }
 
     def __str__(self):
         return f"{self.name} (Effect: {self.effect_description})"
@@ -26,9 +31,6 @@ class Location:
         total_power = sum(card.power for card in self.cards if card.owner == player_id)
         card_list = [(card.name, card.power) for card in self.cards if card.owner == player_id]
         card_list.clear()
-        for card in self.cards:
-            if card.name == "Iron Man" and card.owner == player_id:
-                total_power *= 2
         return total_power
 
     def determine_winner(self):

@@ -1,4 +1,3 @@
-from ai import AIPlayer
 
 class Card:
     def __init__(self, name=None, energy_cost=None, power=None, ability_description=None, ability=None):
@@ -15,11 +14,11 @@ class Card:
         self.location_effect_applied = False  # Add this flag
         self.revealed = False
 
-    def reveal(self, game, owner: AIPlayer, location):
+    def reveal(self, game: 'Game', owner: 'AIPlayer', location: 'Location'):
         return game, owner, location
 
-    def ongoing(self):
-        pass
+    def ongoing(self, game: 'Game', owner: 'AIPlayer', location: 'Location'):
+        return game, owner, location
 
     def __repr__(self):
         return f"{self.name} (Energy: {self.energy_cost}, Power: {self.power}, Ability: {self.ability_description})"

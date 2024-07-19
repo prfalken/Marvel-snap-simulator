@@ -26,7 +26,7 @@ def generate_all_cards():
         cards.Cyclops(),
         cards.Hawkeye(),
         cards.Hulk(),
-        Card("Iron Man", 5, 0, "Ongoing: Your total Power is doubled at this Location."),
+        cards.IronMan(),
         cards.Medusa(),
         Card("Misty Knight", 1, 2, "No ability"),
         Card("The Punisher", 3, 2, "Ongoing: +1 Power for each opposing card at this Location.", punisher_ability),

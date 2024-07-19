@@ -4,19 +4,9 @@ from location import Location, generate_all_locations
 from ai import AIPlayer
 from data import update_deck_data, save_deck_data, load_deck_data, get_average_power
 from factories import generate_all_cards
+from enums import PlayerIDs
 
 from loguru import logger
-
-from enum import Enum
-
-class Winner(Enum):
-    PLAYER1 = 0
-    PLAYER2 = 1
-    DRAW = 2
-
-class PlayerIDs(Enum):
-    PLAYER1 = 0
-    PLAYER2 = 1
 
 class Game:
     def __init__(self):
@@ -24,7 +14,7 @@ class Game:
         self.all_cards = generate_all_cards()
         self.all_locations = generate_all_locations()
         self.players = [AIPlayer(self, 0, copy.deepcopy(self.all_cards)), AIPlayer(self, 1, copy.deepcopy(self.all_cards))]
-        self.locations = [Location("Location 1", []), Location("Location 2", []), Location("Location 3", [])]
+        self.locations = [Location("Location 1", [], position=0), Location("Location 2", [], position=1), Location("Location 3", [], position=2)]
         self.current_turn = 0
         self.current_location = 0
         self.prepare_game()
@@ -47,7 +37,7 @@ class Game:
             card_copy.owner = player_id
             card_copy.location = location_number
             location.cards.append(card_copy)
-            logger.debug(f"Card played by player {player_id+1}: {card_copy}")
+            logger.debug(f"Card played by player {player_id+1}: {card_copy} on Location position {location_number}")
 
             if player_id == PlayerIDs.PLAYER1.value:
                 location.player1_played_card = True
@@ -74,6 +64,7 @@ class Game:
         logger.debug(f"Location revealed: {location}")
         location.revealed = True
         location.position = self.current_location
+        self.locations[self.current_location] = location
         self.current_location += 1
         location.apply_location_effect(self)
 
@@ -83,6 +74,8 @@ class Game:
     def prepare_game(self):
         self.locations = self.generate_locations()
         self.reveal_location()
+        for location in self.locations:
+            location.position = self.locations.index(location)
 
     def play_turn(self):
         for player_id in PlayerIDs:
@@ -146,16 +139,19 @@ class Game:
                             # Update the location card's power value as well
                             if location_card is not None:
                                 location_card.power = card.power  # Update the power of the card in location.cards
+                                # location.powers[location.position] += card.power # Update the total power of the location
                             logger.debug(f"Card {card.name} has increased from {card.base_power} to {card.power}")
 
     def apply_ongoing_abilities(self):
         for player_id in PlayerIDs:
             player_id = player_id.value
+            player = self.players[player_id]
             for location in self.locations:
                 for card in location.cards:
-                    if card.owner == player_id and card.ability is not None and card.ability.ability_type == "Ongoing":
-                        card.ability.effect(card, self, player_id, location)
+                    self, player, location = card.ongoing(self, player, location)
+                    self.locations[location.position] = location
             self.apply_location_effects(player_id)
+
 
 
     def apply_location_effects(self, player_id):
@@ -186,6 +182,10 @@ class Game:
             if location.end_of_turn_effect:
                 location.end_of_turn_effect(i, self, self.current_turn)
 
+        for location in self.locations:
+            for player_id in PlayerIDs:
+                location.powers[player_id.value] = location.calculate_total_power(player_id.value)
+
     def display_game_state(self):
         print("\nCards at each location:")
 
@@ -208,11 +208,14 @@ class Game:
                 print(f"\nUnrevealed Location")
             print(f"Player 1: {player1_cards}")
             print(f"Player 2: {player2_cards}")
+
             loc_winner = location.determine_winner()
             if loc_winner == 0:
                 print(f"Player 1 wins this location")
             elif loc_winner == 1:
                 print(f"Player 2 wins this location")
+
+            print(location.powers)
 
             player1_cards_by_location.append(player1_cards + [f"Player 1 Power: {player1_power}"])
             player2_cards_by_location.append(player2_cards + [f"Player 2 Power: {player2_power}"])
@@ -281,7 +284,7 @@ class Game:
             self.play_turn()
             self.apply_ongoing_abilities()
             self.end_of_turn()
-            # self.display_game_state()
+            self.display_game_state()
 
         self.determine_winner()
 

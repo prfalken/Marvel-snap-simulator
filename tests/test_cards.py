@@ -3,6 +3,7 @@ import cards
 import factories
 from card import Card
 from game import Game
+from enums import PlayerIDs
 from loguru import logger
 
 class TestCards(unittest.TestCase):
@@ -14,7 +15,7 @@ class TestCards(unittest.TestCase):
         self.game.players[1].hand = []
         self.game.players[1].deck = []
         self.game.players[0].deck = []
-        self.player = self.game.players[0]
+        self.player = self.game.players[PlayerIDs.PLAYER1.value]
 
     def clear_locations(self):
         for location in self.game.locations:
@@ -28,7 +29,6 @@ class TestCards(unittest.TestCase):
         assert abo.base_power == 9
         assert abo.ability_description == "No Ability"
         assert abo.owner == None
-
 
     def test_cyclops(self):
         cyc = cards.Cyclops()
@@ -110,7 +110,6 @@ class TestCards(unittest.TestCase):
 
         self.assertEqual(played_hawkeye.power, 1)
 
-
     def test_hulk(self):
         hulk = cards.Hulk()
         assert hulk.name == "Hulk"
@@ -119,8 +118,50 @@ class TestCards(unittest.TestCase):
         assert hulk.base_power == 12
         assert hulk.ability_description == "No Ability"
 
+    def test_ironman(self):
+        self.clear_locations()
+
+        for player_id in PlayerIDs:
+            self.player = self.game.players[player_id.value]
+
+            # Create an Iron Man card
+            ironman = Card()
+            location_id = 0
+            for card in self.all_cards:
+                if card.name == "Iron Man":
+                    ironman = card
+                    break
+            ironman.energy_cost = 1
+            ironman.owner = self.player.player_id
+
+            # Add Iron Man to player's hand
+            self.player.hand = []
+            self.player.hand.append(ironman)
+
+            self.game.play_card(ironman, self.player.player_id, location_id)
+            self.game.reveal_cards(self.player.player_id)
+
+            self.game.current_turn += 1
+            self.player.energy = 1
+
+            # play a card in IronMan's location - should be doubled
+            some_card = Card("Some Card", 1, 10, "No Ability")
+            some_card.energy_cost = 1
+            self.player.hand.append(some_card)
+            self.game.play_card(some_card, self.player.player_id, location_id)
+            self.game.reveal_cards(self.player.player_id)
+
+            location = self.game.locations[location_id]
+
+            self.game.apply_ongoing_abilities()
+
+        self.assertEqual(location.powers[PlayerIDs.PLAYER1.value], 20)
+        # self.assertEqual(location.powers[PlayerIDs.PLAYER2.value], 20)
+
+
     def test_Medusa(self):
         self.clear_locations()
+
         # Create a Medusa card
         medusa = Card()
         location_id = 1

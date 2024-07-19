@@ -15,7 +15,7 @@ def main():
         game.play_game()
 
     decks_data = load_deck_data('decks_data.json')
-    printwinrate(decks_data)
+    # printwinrate(decks_data)
 
     logger.info('Finished')
 

@@ -1,7 +1,5 @@
 from card import Card
 from loguru import logger
-from ai import AIPlayer
-from game import Game
 from location import Location
 class Abomination(Card):
     def __init__(self):
@@ -41,7 +39,7 @@ class Hawkeye(Card):
         self.number_of_cards_here = 0
         self.hawkeye_triggered = False
 
-    def reveal(self, game: Game, owner: AIPlayer, location: Location):
+    def reveal(self, game: 'Game', owner: 'AIPlayer', location: Location):
         if not self.revealed:
             self.revealed = True
             self.turn_played = game.current_turn
@@ -57,6 +55,19 @@ class Hawkeye(Card):
             
         return game, owner, location
 
+class IronMan(Card):
+    def __init__(self):
+        Card.__init__(self)
+        self.name = "Iron Man"
+        self.energy_cost = 5
+        self.power = 0
+        self.base_power = 0
+        self.ability_description = "Ongoing: Your total Power is doubled at this Location."
+
+    def ongoing(self, game: 'Game', owner: 'AIPlayer', location: Location):
+        total_power = location.calculate_total_power(owner.player_id)
+        location.powers[owner.player_id] = total_power * 2
+        return game, owner, location
 
 class Medusa(Card):
     def __init__(self):
@@ -67,7 +78,7 @@ class Medusa(Card):
         self.base_power = 2
         self.ability_description = "On Reveal: If this is at the middle Location, +2 Power."
 
-    def reveal(self, game: Game, owner: AIPlayer, location: Location):
+    def reveal(self, game: 'Game', owner: 'AIPlayer', location: Location):
         if self.location == 1:
             logger.debug(f"{self.name} is at the middle location. Power +2")
             self.power += 2
@@ -82,7 +93,7 @@ class Sentinel(Card):
         self.base_power = 3
         self.ability_description = "On Reveal: Add another Sentinel to your hand."
 
-    def reveal(self, game, owner: AIPlayer, location):
+    def reveal(self, game, owner: 'AIPlayer', location):
         new_sentinel = Sentinel()
         owner.hand.append(new_sentinel)
         logger.debug(f"Player {owner.player_id+1} added another Sentinel to their hand.")

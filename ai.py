@@ -7,7 +7,6 @@ class AIPlayer:
     def __init__(self, game, player_id, all_cards):
         self.game = game
         self.player_id = player_id
-        self.location_powers = [0, 0, 0]
         self.turn_energy_spent = 0
         self.energy = 1
         self.deck = self.draw_starting_deck(all_cards)
