@@ -21,13 +21,14 @@ class Game:
         self.reveal_order = [PLAYER1_ID, PLAYER2_ID]
         random.shuffle(self.reveal_order)
 
-    def play_card(self, card, player_id, location_number):
+
+    def play_card(self, card, player_id, location_id):
         player = self.players[player_id]
-        location = self.locations[location_number]
+        location = self.locations[location_id]
         card_copy = copy.deepcopy(card)
         card_copy.owner = player_id
         card_copy.turn_played = self.current_turn
-        card_copy.location = location_number
+        card_copy.location = location_id
 
         # Ensuring the location does not already have 4 cards from the player.
         if sum(1 for card in location.cards if card.owner == player_id) >= 4:
@@ -36,9 +37,9 @@ class Game:
 
         if card.energy_cost <= player.energy:
             card_copy.owner = player_id
-            card_copy.location = location_number
+            card_copy.location = location_id
             location.cards.append(card_copy)
-            logger.debug(f"Card played by player {player_id+1}: {card_copy} on Location position {location_number}")
+            logger.debug(f"Card played by player {player_id+1}: {card_copy} on Location position {location_id}")
 
             if player_id == PLAYER1_ID:
                 location.player1_played_card = True
@@ -107,7 +108,6 @@ class Game:
         
         return Winner.DRAW.value
             
-
 
     def play_turn(self):
         for player_id in PLAYER1_ID, PLAYER2_ID:

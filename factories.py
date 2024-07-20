@@ -17,7 +17,6 @@ def generate_all_cards():
             return 3
         return 0
 
-    punisher_ability = Ability(punisher_effect, "Ongoing")
     star_lord_ability = Ability(star_lord_effect, "On Reveal")
 
 
@@ -29,7 +28,7 @@ def generate_all_cards():
         cards.IronMan(),
         cards.Medusa(),
         cards.MistyKnight(),
-        Card("The Punisher", 3, 2, "Ongoing: +1 Power for each opposing card at this Location.", punisher_ability),
+        cards.ThePunisher(),
         Card("Quicksilver", 1, 2, ""),
         cards.Sentinel(),
         cards.Shocker(),

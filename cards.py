@@ -116,6 +116,22 @@ class Shocker(Card):
         self.power = 3
         self.base_power = 3
         self.ability_description = "No Ability"
+class ThePunisher(Card):
+    def __init__(self):
+        Card.__init__(self)
+        self.name = "The Punisher"
+        self.energy_cost = 3
+        self.power = 2
+        self.base_power = 2
+        self.ability_description = "Ongoing: +1 Power for each opposing card at this Location."
+
+    def ongoing(self, game: 'Game', owner: 'AIPlayer', location: Location):
+        location = game.locations[self.location]
+        enemy_card_count = sum(1 for c in location.cards if c.owner != owner and c != self)  # Include the current card
+        bonus_power = 1 * enemy_card_count
+        self.power = self.base_power + bonus_power
+        logger.debug("The Punisher's power is now: " + str(self.power))
+        return game, owner, location
 
 class TheThing(Card):
     def __init__(self):
