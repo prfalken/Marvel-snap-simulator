@@ -1,13 +1,17 @@
+import sys
 import unittest
-
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, call
+from loguru import logger
 
 from game import Game
 from card import Card
 from location import Location
 
-import copy
-from ai import AIPlayer
+from enums import PLAYER1_ID, PLAYER2_ID
+
+logger.remove()
+# logger.add(sys.stderr, level="INFO")
+
 
 class TestGame(unittest.TestCase):
 
@@ -39,7 +43,6 @@ class TestGame(unittest.TestCase):
         player1.hand = player1_startswith
         player2.hand = player2_startswith
         game.play_game()
-        assert game.winner in [0, 1]
 
 
     def test_play_card(self):
@@ -74,11 +77,11 @@ class TestGame(unittest.TestCase):
 
     def test_play_turn(self):
         game = Game()
-        game.players[0].hand = [Card("Card 1", 1, 1)]
-        game.players[0].hand = [Card("Card 2", 1, 100)]
+        game.players[PLAYER1_ID].hand = [Card("Card 1", 1, 1)]
+        game.players[PLAYER2_ID].hand = [Card("Card 2", 1, 100)]
         game.reveal_cards = MagicMock()
         game.play_turn()
-        game.reveal_cards.assert_called_with(1)     
+        game.reveal_cards.assert_has_calls([call(1), call(0)])
 
     def test_reveal_cards(self):
         game = Game()
