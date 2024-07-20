@@ -96,11 +96,6 @@ class TestGame(unittest.TestCase):
         game.reveal_cards(PLAYER1_ID)
         self.assertTrue(card.revealed)
 
-
-
-        game.reveal_cards(1)
-        # Add assertions for the expected behavior of the reveal_cards method
-
     def test_apply_ongoing_abilities(self):
         game = Game()
         game.apply_ongoing_abilities()
