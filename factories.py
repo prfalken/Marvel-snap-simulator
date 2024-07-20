@@ -28,15 +28,13 @@ def generate_all_cards():
         cards.Hulk(),
         cards.IronMan(),
         cards.Medusa(),
-        Card("Misty Knight", 1, 2, "No ability"),
+        cards.MistyKnight(),
         Card("The Punisher", 3, 2, "Ongoing: +1 Power for each opposing card at this Location.", punisher_ability),
         Card("Quicksilver", 1, 2, ""),
         cards.Sentinel(),
-        Card("Shocker", 2, 3, "No ability"),
+        cards.Shocker(),
         Card("Star Lord", 2, 2, "On Reveal: If your opponent played a card here this turn, +3 Power.", star_lord_ability),
-        Card("The Thing", 4, 6, "No ability"),
+        cards.TheThing(),
     ]
-
-    # sentinel_card = next(card for card in all_cards if card.name == "Sentinel")
 
     return all_cards
