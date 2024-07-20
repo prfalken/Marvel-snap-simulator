@@ -4,7 +4,7 @@ from location import Location, generate_all_locations
 from ai import AIPlayer
 from data import update_deck_data, save_deck_data, load_deck_data, get_average_power
 from factories import generate_all_cards
-from enums import PLAYER1_ID, PLAYER2_ID
+from enums import PLAYER1_ID, PLAYER2_ID, Winner
 
 from loguru import logger
 
@@ -18,7 +18,9 @@ class Game:
         self.current_turn = 0
         self.current_location = 0
         self.prepare_game()
-        self.winner=2
+        self.winner=Winner.DRAW.value
+        self.reveal_order = [PLAYER1_ID, PLAYER2_ID]
+        random.shuffle(self.reveal_order)
 
     def play_card(self, card, player_id, location_number):
         player = self.players[player_id]
@@ -77,6 +79,37 @@ class Game:
         for location in self.locations:
             location.position = self.locations.index(location)
 
+    def determine_winner(self):
+        player1_total_power = sum(location.powers[PLAYER1_ID] for location in self.locations)
+        player2_total_power = sum(location.powers[PLAYER2_ID] for location in self.locations)
+        logger.info(f"Player 1 had a total power of {player1_total_power}")
+        logger.info(f"Player 2 had a total power of {player2_total_power}")
+
+        player1_wins = 0
+        player2_wins = 0
+        for location in self.locations:
+            if location.powers[PLAYER1_ID] > location.powers[PLAYER2_ID]:
+                player1_wins += 1
+            elif location.powers[PLAYER2_ID] < location.powers[PLAYER2_ID]:
+                player2_wins += 1
+
+        logger.info(f"Total won locations for Player 1: {player1_wins}")
+        logger.info(f"Total won locations for Player 2: {player2_wins}")}
+
+        if player1_wins > player2_wins:
+            return Winner.PLAYER1.value
+        elif player1_wins < player2_wins:
+            return Winner.PLAYER2.value
+        elif player1_wins == player2_wins:
+            if player1_total_power >= player2_total_power:
+                return Winner.PLAYER1.value
+            else:
+                return Winner.PLAYER2.value
+        else:
+            return Winner.DRAW.value
+            
+
+
     def play_turn(self):
         for player_id in PLAYER1_ID, PLAYER2_ID:
             player = self.players[player_id]
@@ -99,28 +132,14 @@ class Game:
                 break
 
         # Determine the order in which players reveal cards
-        player1_wins = 0
-        player2_wins = 0
-        for location in self.locations:
-            if location.calculate_total_power(0) > location.calculate_total_power(1):
-                player1_wins += 1
-            elif location.calculate_total_power(0) < location.calculate_total_power(1):
-                player2_wins += 1
-
-        if player1_wins > player2_wins:
-            reveal_order = [0, 1]
-        elif player1_wins < player2_wins:
-            reveal_order = [1, 0]
-        else:
-            player1_total_power = sum(location.calculate_total_power(0) for location in self.locations)
-            player2_total_power = sum(location.calculate_total_power(1) for location in self.locations)
-            if player1_total_power >= player2_total_power:
-                reveal_order = [0, 1]
-            else:
-                reveal_order = [1, 0]
+        winner = self.determine_winner()
+        if winner == Winner.PLAYER1.value:
+            self.reveal_order = [PLAYER1_ID, PLAYER2_ID]
+        elif winner == Winner.PLAYER2.value:
+            self.reveal_order = [PLAYER2_ID, PLAYER1_ID]
 
         # Reveal cards and apply card and location effects in the determined order
-        for player_id in reveal_order:
+        for player_id in self.reveal_order:
             self.reveal_cards(player_id)
 
     def reveal_cards(self, player_id: int):
@@ -194,8 +213,8 @@ class Game:
         player2_cards_by_location = []
 
         for location in self.locations:
-            player1_power = location.calculate_total_power(0)
-            player2_power = location.calculate_total_power(1)
+            player1_power = location.powers[PLAYER1_ID]
+            player2_power = location.powers[PLAYER2_ID]
             player1_cards = [f"{card.name} ({card.power})" for card in location.cards if card.owner == 0]
             player2_cards = [f"{card.name} ({card.power})" for card in location.cards if card.owner == 1]
 
@@ -229,47 +248,27 @@ class Game:
         logger.debug("Player 2 Deck:", [f"{card.name} ({card.power})" for card in self.players[1].deck])
         logger.debug("Player 2 Hand:", [f"{card.name} ({card.power})" for card in self.players[1].hand])
 
-    def determine_winner(self):
-        player1_score = sum(location.calculate_total_power(0) for location in self.locations)
-        player2_score = sum(location.calculate_total_power(1) for location in self.locations)
-        logger.info(f"Player 1 had a total power of {player1_score}")
-        logger.info(f"Player 2 had a total power of {player2_score}")
-        player1_wins = 0
-        player2_wins = 0
-        for location in self.locations:
-            if location.calculate_total_power(0) > location.calculate_total_power(1):
-                player1_wins += 1
-            elif location.calculate_total_power(0) < location.calculate_total_power(1):
-                player2_wins += 1
-
-        logger.info(f"Total won locations for Player 1: {player1_wins}")
-        logger.info(f"Total won locations for Player 2: {player2_wins}")
-
+    def declare_winner(self):
         decks_data = load_deck_data('decks_data.json')
-        if player1_wins > player2_wins:
-            logger.info("Player 1 Wins!")
-            update_deck_data(self.players[0].starting_deck, "win", player1_score, decks_data)
-            update_deck_data(self.players[1].starting_deck, "loss", player2_score, decks_data)
+        winner = self.determine_winner()
 
-        elif player1_wins < player2_wins:
+        if winner == Winner.PLAYER1.value :
+            logger.info("Player 1 Wins!")
+            update_deck_data(self.players[0].starting_deck, "win", self.powers[PLAYER1_ID], decks_data)
+            update_deck_data(self.players[1].starting_deck, "loss", self.powers[PLAYER2_ID], decks_data)
+
+        elif winner == Winner.PLAYER2.value:
             logger.info("Player 2 Wins!")
-            update_deck_data(self.players[0].starting_deck, "loss", player1_score, decks_data)
-            update_deck_data(self.players[1].starting_deck, "win", player2_score, decks_data)
+            update_deck_data(self.players[0].starting_deck, "loss", self.powers[PLAYER1_ID], decks_data)
+            update_deck_data(self.players[1].starting_deck, "win", self.powers[PLAYER2_ID], decks_data)
+        else:
+            logger.info("It's a draw!")
+            update_deck_data(self.players[0].starting_deck, "draw", self.powers[PLAYER1_ID], decks_data)
+            update_deck_data(self.players[1].starting_deck, "draw", self.powers[PLAYER2_ID], decks_data)
 
         save_deck_data(decks_data, 'decks_data.json')
 
-        if player1_wins > player2_wins:
-            self.winner = 0
-        elif player2_wins > player1_wins:
-            self.winner = 1
-        elif player1_score > player2_score:
-            self.winner = 0        
-        elif player2_score > player1_score:
-            self.winner = 1
-        else:
-            self.winner = 2
-
-        logger.info(f"Player {self.winner + 1} wins!")
+        logger.info(f"Player {self.winner} wins!")
 
     def play_game(self):
         for turn in range(6):  # Loop through the 6 turns
