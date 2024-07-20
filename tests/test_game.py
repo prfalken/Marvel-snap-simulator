@@ -85,6 +85,19 @@ class TestGame(unittest.TestCase):
 
     def test_reveal_cards(self):
         game = Game()
+        card = Card("Card 1", 1, 1)
+        player = game.players[PLAYER1_ID]
+        player.hand.append(card)
+        player.played_cards.append(card)
+        card.location = 0
+        card.owner = PLAYER1_ID
+        location = game.locations[0]
+        location.cards.append(card)
+        game.reveal_cards(PLAYER1_ID)
+        self.assertTrue(card.revealed)
+
+
+
         game.reveal_cards(1)
         # Add assertions for the expected behavior of the reveal_cards method
 

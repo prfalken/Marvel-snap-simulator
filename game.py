@@ -158,6 +158,7 @@ class Game:
                                 location_card.power = card.power  # Update the power of the card in location.cards
                                 location.powers[player_id] += card.power # Update the total power of the location
                             logger.debug(f"Card {card.name} has increased from {card.base_power} to {card.power}")
+                    card.revealed = True
 
     def apply_ongoing_abilities(self):
         for player_id in PLAYER1_ID, PLAYER2_ID:
