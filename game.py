@@ -4,7 +4,7 @@ from location import Location, generate_all_locations
 from ai import AIPlayer
 from data import update_deck_data, save_deck_data, load_deck_data, get_average_power
 from factories import generate_all_cards
-from enums import PlayerIDs
+from enums import PLAYER1_ID, PLAYER2_ID
 
 from loguru import logger
 
@@ -39,7 +39,7 @@ class Game:
             location.cards.append(card_copy)
             logger.debug(f"Card played by player {player_id+1}: {card_copy} on Location position {location_number}")
 
-            if player_id == PlayerIDs.PLAYER1.value:
+            if player_id == PLAYER1_ID:
                 location.player1_played_card = True
             else:
                 location.player2_played_card = True
@@ -78,8 +78,7 @@ class Game:
             location.position = self.locations.index(location)
 
     def play_turn(self):
-        for player_id in PlayerIDs:
-            player_id = player_id.value
+        for player_id in PLAYER1_ID, PLAYER2_ID:
             player = self.players[player_id]
             player.played_cards = []
             player.played_card_locations = []
@@ -139,12 +138,12 @@ class Game:
                             # Update the location card's power value as well
                             if location_card is not None:
                                 location_card.power = card.power  # Update the power of the card in location.cards
-                                # location.powers[location.position] += card.power # Update the total power of the location
+                                location.powers[location.position] += card.power # Update the total power of the location
                             logger.debug(f"Card {card.name} has increased from {card.base_power} to {card.power}")
 
     def apply_ongoing_abilities(self):
-        for player_id in PlayerIDs:
-            player_id = player_id.value
+        for player_id in PLAYER1_ID, PLAYER2_ID:
+            player_id = player_id
             player = self.players[player_id]
             for location in self.locations:
                 for card in location.cards:
@@ -183,8 +182,8 @@ class Game:
                 location.end_of_turn_effect(i, self, self.current_turn)
 
         for location in self.locations:
-            for player_id in PlayerIDs:
-                location.powers[player_id.value] = location.calculate_total_power(player_id.value)
+            for player_id in PLAYER1_ID, PLAYER2_ID:
+                location.powers[player_id] = location.calculate_total_power(player_id)
 
         self.apply_ongoing_abilities()
 

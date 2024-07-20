@@ -5,6 +5,5 @@ class Winner(Enum):
     PLAYER2 = 1
     DRAW = 2
 
-class PlayerIDs(Enum):
-    PLAYER1 = 0
-    PLAYER2 = 1
+PLAYER1_ID = 0
+PLAYER2_ID = 1

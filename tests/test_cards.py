@@ -4,7 +4,7 @@ import cards
 import factories
 from card import Card
 from game import Game
-from enums import PlayerIDs
+from enums import PLAYER1_ID
 from loguru import logger
 
 logger.remove()
@@ -19,7 +19,7 @@ class TestCards(unittest.TestCase):
         self.game.players[1].hand = []
         self.game.players[1].deck = []
         self.game.players[0].deck = []
-        self.player = self.game.players[PlayerIDs.PLAYER1.value]
+        self.player = self.game.players[PLAYER1_ID]
 
     def clear_locations(self):
         for location in self.game.locations:

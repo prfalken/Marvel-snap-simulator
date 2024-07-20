@@ -1,5 +1,5 @@
 import random
-from enums import PlayerIDs
+from enums import PLAYER1_ID, PLAYER2_ID
 
 class Location:
     def __init__(self, name, effect_description, effect=None, on_reveal_effect=None, no_destroy=None, can_play_card=None, end_of_turn_effect=None, position=None):
@@ -17,8 +17,8 @@ class Location:
         self.revealed = False
         self.position = position
         self.powers = {
-            PlayerIDs.PLAYER1.value: 0,
-            PlayerIDs.PLAYER2.value: 0
+            PLAYER1_ID: 0,
+            PLAYER2_ID: 0
         }
 
     def __str__(self):

@@ -6,7 +6,6 @@ from data import printwinrate
 
 from loguru import logger
 
-
 def main():
     logger.info('Started')
 
