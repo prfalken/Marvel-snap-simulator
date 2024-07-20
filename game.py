@@ -61,7 +61,7 @@ class Game:
             return
 
         location = self.locations[self.current_location]
-        logger.debug(f"Location revealed: {location}")
+        logger.debug(f"Location revealed: {location} at position {self.current_location}")
         location.revealed = True
         location.position = self.current_location
         self.locations[self.current_location] = location
@@ -138,7 +138,7 @@ class Game:
                             # Update the location card's power value as well
                             if location_card is not None:
                                 location_card.power = card.power  # Update the power of the card in location.cards
-                                location.powers[location.position] += card.power # Update the total power of the location
+                                location.powers[player_id] += card.power # Update the total power of the location
                             logger.debug(f"Card {card.name} has increased from {card.base_power} to {card.power}")
 
     def apply_ongoing_abilities(self):

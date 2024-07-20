@@ -1,4 +1,4 @@
-import random
+
 from enums import PLAYER1_ID, PLAYER2_ID
 
 class Location:
