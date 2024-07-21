@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, call
 from loguru import logger
 
 from game import Game
-from card import Card
+from cards import Card
 from location import Location
 
 from enums import PLAYER1_ID, PLAYER2_ID

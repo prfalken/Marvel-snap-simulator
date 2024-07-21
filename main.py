@@ -1,5 +1,5 @@
 from location import generate_all_locations
-from card import Card, Ability
+from card import Card
 from game import Game
 from data import load_deck_data
 from data import printwinrate

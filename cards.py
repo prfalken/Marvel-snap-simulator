@@ -1,6 +1,32 @@
-from card import Card
+
 from loguru import logger
 from location import Location
+
+class Card:
+    def __init__(self, name=None, energy_cost=None, power=None, ability_description=None, ability=None):
+        self.name = name
+        self.game = None
+        self.energy_cost = energy_cost
+        self.power = power
+        self.base_power = power
+        self.ability_description = ability_description
+        self.ability = ability
+        self.owner = None
+        self.turn_played = 0
+        self.location = None
+        self.location_effect_applied = False  # Add this flag
+        self.revealed = False
+
+    def reveal(self, game: 'Game', owner: 'AIPlayer', location: 'Location'):
+        return game, owner, location
+
+    def ongoing(self, game: 'Game', owner: 'AIPlayer', location: 'Location'):
+        return game, owner, location
+
+    def __repr__(self):
+        return f"{self.name} (Energy: {self.energy_cost}, Power: {self.power}, Ability: {self.ability_description})"
+
+
 class Abomination(Card):
     def __init__(self):
         Card.__init__(self)
@@ -139,7 +165,7 @@ class StarLord(Card):
         opponent = 1 if owner.player_id == 0 else 0
         for c in location.cards:
             if any(c.owner == opponent and c.turn_played == game.current_turn for c in location.cards):
-                self.power += 3
+                self.power += 4
                 logger.debug(f"Star Lord : A card was played by the opponent this turn. Power +4")
                 return game, owner, location
         return game, owner, location
@@ -169,3 +195,19 @@ class TheThing(Card):
         self.power = 6
         self.base_power = 6
         self.ability_description = "No Ability"
+
+class YellowJacket(Card):
+    def __init__(self):
+        Card.__init__(self)
+        self.name = "Yellow Jacket"
+        self.energy_cost = 0
+        self.power = 2
+        self.base_power = 2
+        self.ability_description = "On Reveal: Afflict your other cards here with -1 Power."
+
+    def reveal(self, game: 'Game', owner: 'AIPlayer', location: Location):
+        for c in location.cards:
+            if c != self:
+                c.power -= 1
+                logger.debug(f"{c.name} has been afflicted by Yellow Jacket. Power -1")
+        return game, owner, location

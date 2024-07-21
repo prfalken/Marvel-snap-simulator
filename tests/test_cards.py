@@ -2,7 +2,7 @@ import sys
 import unittest
 import cards
 import factories
-from card import Card
+from cards import Card
 from game import Game
 from enums import PLAYER1_ID, PLAYER2_ID
 from loguru import logger
