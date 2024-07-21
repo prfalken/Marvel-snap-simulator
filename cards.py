@@ -93,6 +93,15 @@ class MistyKnight(Card):
         self.base_power = 2
         self.ability_description = "No Ability"
 
+class Quicksilver(Card):
+    def __init__(self):
+        Card.__init__(self)
+        self.name = "Quicksilver"
+        self.energy_cost = 1
+        self.power = 2
+        self.base_power = 2
+        self.ability_description = "No Ability"
+
 class Sentinel(Card):
     def __init__(self):
         Card.__init__(self)

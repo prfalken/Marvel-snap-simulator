@@ -2,6 +2,7 @@ import random
 from location import Location
 import copy
 
+from loguru import logger
 
 class AIPlayer:
     def __init__(self, game, player_id, all_cards):
@@ -41,6 +42,7 @@ class AIPlayer:
             for card in hand:  # Add this loop to remove the 3 cards from the deck
                 deck.remove(card)
             hand.append(quicksilver_card)  # Add Quicksilver to the hand
+            logger.debug(f"Player {self.player_id} starts with Quicksilver")
         else:
             hand = random.sample(deck, 4)  # Draw 4 cards
             for card in hand:
