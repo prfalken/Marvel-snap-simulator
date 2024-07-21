@@ -106,13 +106,18 @@ class Turn:
             self.reveal_order = [PLAYER2_ID, PLAYER1_ID]
 
         # Reveal cards and apply card and location effects in the determined order
+        # Also apply any effects that trigger on any card reveal (e.g. Bishop)
         for player_id in self.reveal_order:
             self.reveal_cards(player_id)
+            for location in self.game.locations:
+                for card in location.cards:
+                    if card.owner_id == player_id:
+                        self.game = card.on_any_card_reveal_effect(self.game)
 
     def end_of_turn(self):
         # Reset energy for each player according to the current turn
         for player in self.game.players:
-            player.energy = self.turn_id + 1
+            player.energy = self.turn_id
             player.turn_energy_spent = 0
 
         # Reset the cards_this_turn list for each location

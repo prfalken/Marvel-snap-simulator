@@ -29,6 +29,9 @@ class Card:
     def ongoing(self, game: "Game"):
         return game
 
+    def on_any_card_reveal_effect(self, game: "Game"):
+        return game
+
     def __repr__(self):
         return f"{self.name} (Energy: {self.energy_cost}, Power: {self.power}, Ability: {self.ability_description})"
 
@@ -83,6 +86,28 @@ class AntMan(Card):
             self.power += 4
 
             self.ongoing_applied = True
+        return game
+
+
+class Bishop(Card):
+    def __init__(self):
+        Card.__init__(self)
+        self.name = "Bishop"
+        self.energy_cost = 3
+        self.power = 1
+        self.base_power = 1
+        self.ability_description = "After you play a card, this gains +1 Power."
+
+    def on_any_card_reveal_effect(self, game: "Game"):
+        for location in game.locations:
+            for card in location.cards:
+                if (
+                    card.owner_id == self.owner_id
+                    and card.turn_played == game.current_turn
+                    and card != self
+                ):
+                    self.power += 1
+                    logger.debug(f"{card.name} played. Bishop gains Power +1")
         return game
 
 

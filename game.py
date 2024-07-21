@@ -78,7 +78,7 @@ class Game:
 
     def play_game(self):
         for turn_id in range(6):  # Loop through the 6 turns
-            self.current_turn = turn_id + 1
+            self.current_turn = turn_id
             self.turn = Turn(turn_id, self)
             logger.info(f"Turn {self.current_turn}")
             if 4 > self.current_turn > 1:
