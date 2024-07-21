@@ -34,6 +34,26 @@ class Card:
         return f"{self.name} (Energy: {self.energy_cost}, Power: {self.power}, Ability: {self.ability_description})"
 
 
+class AmericaChavez(Card):
+    def __init__(self):
+        Card.__init__(self)
+        self.name = "America Chavez"
+        self.energy_cost = 1
+        self.power = 2
+        self.base_power = 2
+        self.ability_description = "On Reveal: Give the top card of your deck +2 Power."
+
+    def reveal(self, game: "Game"):
+        player = game.players[self.owner_id]
+        if len(player.deck) == 0:
+            return game
+        top_card = player.deck.pop(0)
+        top_card.power += 2
+        logger.debug(f"America Chavez: {top_card.name} was given +2 Power")
+        player.deck.insert(0, top_card)
+        return game
+
+
 class Abomination(Card):
     def __init__(self):
         Card.__init__(self)
@@ -44,38 +64,27 @@ class Abomination(Card):
         self.ability_description = "No Ability"
 
 
-# # class Aero(Card):
-# #     def __init__(self):
-# #         Card.__init__(self)
-# #         self.name = "Aero"
-# #         self.energy_cost = 5
-# #         self.power = 9
-# #         self.base_power = 9
-# #         self.ability_description = "On Reveal: Move the last enemy card played anywhere to this location."
+class AntMan(Card):
+    def __init__(self):
+        Card.__init__(self)
+        self.name = "Ant Man"
+        self.energy_cost = 1
+        self.power = 1
+        self.base_power = 1
+        self.ongoing_applied = False
+        self.ability_description = (
+            "Ongoing: If your side of this location is full, +4 Power."
+        )
 
-# #     def reveal(self, game: 'Game', owner: 'AIPlayer', location: Location):
-# #         opponent_id = 1 if owner.player_id == 0 else 0
-# #         opponent = game.players[opponent_id]
+    def ongoing(self, game: "Game"):
+        location = game.locations[self.location_id]
+        own_cards = [c for c in location.cards if c.owner_id == self.owner_id]
+        if len(own_cards) >= 4 and self.ongoing_applied == False:
+            logger.debug(f"AntMan: Location is full. Power +4")
+            self.power += 4
 
-# #         if len(opponent.played_cards) == 0:
-# #             logger.debug("Aero: No enemy card to move.")
-# #             return game, owner, location
-
-#         last_opponent_card = opponent.played_cards[-1]
-#         last_opponent_card_location = game.locations[last_opponent_card.location.position]
-#         if last_opponent_card_location == location:
-#             logger.debug("Aero: The last enemy card played is already at Aero's location.")
-#             return game, owner, location
-
-#         # if there are already 4 cards in opponents's target location, do nothing
-#         if len([card for card in game.locations[location.position].cards if card.owner == opponent_id ]) == 4:
-#             logger.debug("Aero: The target location is full.")
-#             return game, owner, location
-
-#         last_opponent_card_location.cards.remove(last_opponent_card)
-#         game.locations[self.location].cards.append(last_opponent_card)
-#         logger.debug(f"Aero reveal: {last_opponent_card.name} was moved to location {location.position}")
-#         return game, owner, location
+            self.ongoing_applied = True
+        return game
 
 
 class Cyclops(Card):

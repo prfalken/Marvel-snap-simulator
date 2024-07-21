@@ -36,6 +36,34 @@ class TestCards(unittest.TestCase):
         assert abo.ability_description == "No Ability"
         assert abo.owner_id == None
 
+    def test_antman(self):
+        antman = cards.AntMan()
+        location_id = 0
+        self.game.locations[location_id] = Location("Location 1", "None", position=0)
+        antman.owner_id = self.player.player_id
+
+        # Add Ant Man to player's hand
+        self.player.hand = []
+        self.player.hand.append(antman)
+
+        self.game.play_card(antman, self.player.player_id, location_id)
+        self.game.reveal_cards(self.player.player_id)
+
+        for _ in range(0, 3):
+            self.game.current_turn += 1
+            self.player.energy = 1
+
+            some_card = Card("Some Card", 1, 1, "No Ability")
+            some_card.energy_cost = 1
+            self.player.hand.append(some_card)
+            self.game.play_card(some_card, self.player.player_id, location_id)
+            self.game.reveal_cards(self.player.player_id)
+            self.game.apply_ongoing_abilities()
+
+        # Get the played Ant Man card
+        played_antman = self.game.locations[location_id].cards[0]
+        self.assertEqual(played_antman.power, 5)
+
     def test_cyclops(self):
         cyc = cards.Cyclops()
         assert cyc.name == "Cyclops"

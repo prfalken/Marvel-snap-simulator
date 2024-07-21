@@ -189,7 +189,6 @@ class Game:
             for location in self.locations:
                 for card in location.cards:
                     self = card.ongoing(self)
-                    self.locations[location.position] = location
             self.apply_location_effects(player_id)
 
     def apply_location_effects(self, player_id):
