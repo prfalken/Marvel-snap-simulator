@@ -21,7 +21,6 @@ class Location:
         self.can_play_card = can_play_card
         self.end_of_turn_effect = end_of_turn_effect
         self.cards = []
-        self.cards_this_turn = []
         self.player1_played_card = False
         self.player2_played_card = False
         self.revealed = False
@@ -160,16 +159,3 @@ def generate_all_locations():
         # ...
     ]
     return all_locations
-
-
-class TheVault(Location):
-    def __init__(self):
-        Location.__init__(self)
-        self.name = "The Vault"
-        self.effect_description = "On turn 6, cards can't be played here."
-        self.effect = self.vault_effect
-
-    def can_play_here(self, game):
-        if game.current_turn == 6:
-            return False
-        return True

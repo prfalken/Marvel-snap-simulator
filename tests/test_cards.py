@@ -10,6 +10,7 @@ from loguru import logger
 logger.remove()
 logger.add(sys.stderr, level="DEBUG")
 
+
 class TestCards(unittest.TestCase):
 
     def setUp(self):
@@ -76,7 +77,7 @@ class TestCards(unittest.TestCase):
                 played_hawkeye = card
 
         self.assertEqual(played_hawkeye.power, 4)
- 
+
     def test_hawkeye_not_triggered(self):
         self.clear_locations()
 
@@ -104,7 +105,6 @@ class TestCards(unittest.TestCase):
         self.player.hand.append(some_card)
         self.game.play_card(some_card, self.player.player_id, location_id + 1)
         self.game.reveal_cards(self.player.player_id)
-
 
         # Get the played Hawkeye card from the location
         played_hawkeye = None
@@ -158,7 +158,6 @@ class TestCards(unittest.TestCase):
 
         self.assertEqual(location.powers[self.player.player_id], 20)
 
-
     def test_Medusa(self):
         self.clear_locations()
 
@@ -184,7 +183,7 @@ class TestCards(unittest.TestCase):
             if card.name == "Medusa":
                 played_medusa = card
 
-        # Check the power of the played Medusa card 
+        # Check the power of the played Medusa card
         self.assertEqual(played_medusa.power, 5)
 
     def test_Sentinel(self):
@@ -208,7 +207,7 @@ class TestCards(unittest.TestCase):
 
         logger.debug(f"Player {self.player.player_id+1} hand: {self.player.hand}")
 
-        # Check that player has 1 Sentinel card in hand        
+        # Check that player has 1 Sentinel card in hand
         self.assertEqual(len(self.player.hand), 1)
         self.assertEqual(self.player.hand[0].name, "Sentinel")
 
