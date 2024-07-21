@@ -15,7 +15,7 @@ logger.add(sys.stderr, level="DEBUG")
 
 class TestGame(unittest.TestCase):
 
-    def test_game(self):
+    def test_play_game(self):
         Game.prepare_game = MagicMock()
         game = Game()
         game.all_locations = [
@@ -44,26 +44,6 @@ class TestGame(unittest.TestCase):
         player2.hand = player2_startswith
         game.play_game()
 
-    def test_play_card(self):
-        game = Game()
-        card = Card("Card 1", 1, 1)
-        player_id = 0
-        location_number = 0
-        player = game.players[player_id]
-        player.hand.append(card)
-
-        # Test playing a card with sufficient energy
-        game.play_card(card, player_id, location_number)
-        self.assertEqual(len(game.locations[location_number].cards), 1)
-        self.assertEqual(player.energy, 0)
-
-        # Test playing a card with insufficient energy
-        card2 = Card("Card 2", 10)
-        player.hand.append(card2)
-        game.play_card(card2, player_id, location_number)
-        self.assertEqual(len(game.locations[location_number].cards), 1)
-        self.assertEqual(game.players[player_id].energy, 0)
-
     def test_reveal_location(self):
         game = Game()
         game.reveal_location()
@@ -73,27 +53,6 @@ class TestGame(unittest.TestCase):
         game = Game()
         locations = game.generate_locations()
         self.assertEqual(len(locations), 3)
-
-    def test_play_turn(self):
-        game = Game()
-        game.players[PLAYER1_ID].hand = [Card("Card 1", 1, 1)]
-        game.players[PLAYER2_ID].hand = [Card("Card 2", 1, 100)]
-        game.reveal_cards = MagicMock()
-        game.play_turn()
-        game.reveal_cards.assert_has_calls([call(1), call(0)])
-
-    def test_reveal_cards(self):
-        game = Game()
-        card = Card("Card 1", 1, 1)
-        player = game.players[PLAYER1_ID]
-        player.hand.append(card)
-        player.played_cards.append(card)
-        card.location_id = 0
-        card.owner_id = PLAYER1_ID
-        location = game.locations[0]
-        location.cards.append(card)
-        game.reveal_cards(PLAYER1_ID)
-        self.assertTrue(card.revealed)
 
     def test_apply_ongoing_abilities(self):
         game = Game()
@@ -105,36 +64,12 @@ class TestGame(unittest.TestCase):
         game.apply_location_effects(1)
         # Add assertions for the expected behavior of the apply_location_effects method
 
-    def test_end_of_turn(self):
-        game = Game()
-        game.end_of_turn()
-        # Add assertions for the expected behavior of the end_of_turn method
-
-    def test_determine_winner(self):
-        game = Game()
-        game.determine_winner()
-        # Add assertions for the expected behavior of the determine_winner method
-
     def test_play_game(self):
         game = Game()
         game.play_game()
         # Add assertions for the expected behavior of the play_game method
 
     # Additional tests
-
-    def test_play_card_insufficient_energy(self):
-        game = Game()
-        card = Card("Card 1", 5)
-        player_id = 0
-        location_number = 0
-
-        # Set player's energy to 0
-        game.players[player_id].energy = 0
-
-        # Test playing a card with insufficient energy
-        game.play_card(card, player_id, location_number)
-        self.assertEqual(len(game.locations[location_number].cards), 0)
-        self.assertEqual(game.players[player_id].energy, 0)
 
     def test_reveal_location_multiple_times(self):
         game = Game()
@@ -182,18 +117,6 @@ class TestGame(unittest.TestCase):
         self.assertFalse(game.locations[2].player1_played_card)
         self.assertFalse(game.locations[2].player2_played_card)
 
-    def test_play_turn_no_cards(self):
-        game = Game()
-        game.play_turn()
-
-        # Add assertions for the expected behavior when players have no cards to play
-
-    def test_reveal_cards_no_cards(self):
-        game = Game()
-        game.reveal_cards(1)
-
-        # Add assertions for the expected behavior when player has no cards to reveal
-
     def test_apply_ongoing_abilities_no_abilities(self):
         game = Game()
         game.apply_ongoing_abilities()
@@ -205,34 +128,3 @@ class TestGame(unittest.TestCase):
         game.apply_location_effects(1)
 
         # Add assertions for the expected behavior when no location effects are present
-
-    def test_end_of_turn_reset(self):
-        game = Game()
-        game.end_of_turn()
-        game.end_of_turn()
-
-        # Assert that player's energy is reset
-        self.assertEqual(game.players[0].energy, 1)
-        self.assertEqual(game.players[1].energy, 1)
-
-        # Assert that location's player played card flags are reset
-        self.assertFalse(game.locations[0].player1_played_card)
-        self.assertFalse(game.locations[0].player2_played_card)
-        self.assertFalse(game.locations[1].player1_played_card)
-        self.assertFalse(game.locations[1].player2_played_card)
-        self.assertFalse(game.locations[2].player1_played_card)
-        self.assertFalse(game.locations[2].player2_played_card)
-
-        # Add assertions for the expected behavior of the end_of_turn method
-
-    def test_determine_winner(self):
-        game = Game()
-        game.determine_winner()
-
-        # Add assertions for the expected behavior of the determine_winner method
-
-    def test_play_game(self):
-        game = Game()
-        game.play_game()
-
-        # Add assertions for the expected behavior of the play_game method

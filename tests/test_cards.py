@@ -46,8 +46,8 @@ class TestCards(unittest.TestCase):
         self.player.hand = []
         self.player.hand.append(antman)
 
-        self.game.play_card(antman, self.player.player_id, location_id)
-        self.game.reveal_cards(self.player.player_id)
+        self.game.turn.play_card(antman, self.player.player_id, location_id)
+        self.game.turn.reveal_cards(self.player.player_id)
 
         for _ in range(0, 3):
             self.game.current_turn += 1
@@ -56,8 +56,8 @@ class TestCards(unittest.TestCase):
             some_card = Card("Some Card", 1, 1, "No Ability")
             some_card.energy_cost = 1
             self.player.hand.append(some_card)
-            self.game.play_card(some_card, self.player.player_id, location_id)
-            self.game.reveal_cards(self.player.player_id)
+            self.game.turn.play_card(some_card, self.player.player_id, location_id)
+            self.game.turn.reveal_cards(self.player.player_id)
             self.game.apply_ongoing_abilities()
 
         # Get the played Ant Man card
@@ -87,8 +87,8 @@ class TestCards(unittest.TestCase):
         self.player.hand = []
         self.player.hand.append(hawkeye)
 
-        self.game.play_card(hawkeye, self.player.player_id, location_id)
-        self.game.reveal_cards(self.player.player_id)
+        self.game.turn.play_card(hawkeye, self.player.player_id, location_id)
+        self.game.turn.reveal_cards(self.player.player_id)
 
         self.game.current_turn += 1
         self.player.energy = 1
@@ -96,8 +96,8 @@ class TestCards(unittest.TestCase):
         some_card = Card("Some Card", 1, 1, "No Ability")
         some_card.energy_cost = 1
         self.player.hand.append(some_card)
-        self.game.play_card(some_card, self.player.player_id, location_id)
-        self.game.reveal_cards(self.player.player_id)
+        self.game.turn.play_card(some_card, self.player.player_id, location_id)
+        self.game.turn.reveal_cards(self.player.player_id)
 
         # Get the played Hawkeye card from the location
         played_hawkeye = None
@@ -122,8 +122,8 @@ class TestCards(unittest.TestCase):
         self.player.hand = []
         self.player.hand.append(hawkeye)
 
-        self.game.play_card(hawkeye, self.player.player_id, location_id)
-        self.game.reveal_cards(self.player.player_id)
+        self.game.turn.play_card(hawkeye, self.player.player_id, location_id)
+        self.game.turn.reveal_cards(self.player.player_id)
 
         self.game.current_turn += 1
         self.player.energy = 1
@@ -132,8 +132,8 @@ class TestCards(unittest.TestCase):
         some_card = Card("Some Card", 1, 1, "No Ability")
         some_card.energy_cost = 1
         self.player.hand.append(some_card)
-        self.game.play_card(some_card, self.player.player_id, location_id + 1)
-        self.game.reveal_cards(self.player.player_id)
+        self.game.turn.play_card(some_card, self.player.player_id, location_id + 1)
+        self.game.turn.reveal_cards(self.player.player_id)
 
         # Get the played Hawkeye card from the location
         played_hawkeye = None
@@ -169,8 +169,8 @@ class TestCards(unittest.TestCase):
         self.player.hand = []
         self.player.hand.append(ironman)
 
-        self.game.play_card(ironman, self.player.player_id, location_id)
-        self.game.reveal_cards(self.player.player_id)
+        self.game.turn.play_card(ironman, self.player.player_id, location_id)
+        self.game.turn.reveal_cards(self.player.player_id)
 
         self.game.current_turn += 1
         self.player.energy = 1
@@ -179,8 +179,8 @@ class TestCards(unittest.TestCase):
         some_card = Card("Some Card", 1, 10, "No Ability")
         some_card.energy_cost = 1
         self.player.hand.append(some_card)
-        self.game.play_card(some_card, self.player.player_id, location_id)
-        self.game.reveal_cards(self.player.player_id)
+        self.game.turn.play_card(some_card, self.player.player_id, location_id)
+        self.game.turn.reveal_cards(self.player.player_id)
 
         location = self.game.locations[location_id]
 
@@ -204,8 +204,8 @@ class TestCards(unittest.TestCase):
         self.player.hand = []
         self.player.hand.append(medusa)
 
-        self.game.play_card(medusa, self.player.player_id, location_id)
-        self.game.reveal_cards(self.player.player_id)
+        self.game.turn.play_card(medusa, self.player.player_id, location_id)
+        self.game.turn.reveal_cards(self.player.player_id)
 
         # Get the played Medusa card from the location
         played_medusa = None
@@ -232,8 +232,8 @@ class TestCards(unittest.TestCase):
         self.player.hand.append(sentinel)
         logger.debug(f"Player {self.player.player_id+1} hand: {self.player.hand}")
 
-        self.game.play_card(sentinel, self.player.player_id, location_id)
-        self.game.reveal_cards(self.player.player_id)
+        self.game.turn.play_card(sentinel, self.player.player_id, location_id)
+        self.game.turn.reveal_cards(self.player.player_id)
 
         logger.debug(f"Player {self.player.player_id+1} hand: {self.player.hand}")
 
@@ -253,15 +253,16 @@ class TestCards(unittest.TestCase):
         self.player.hand = []
         self.player.hand.append(starlord)
 
-        self.game.play_card(starlord, self.player.player_id, location_id)
+        self.game.turn.play_card(starlord, self.player.player_id, location_id)
 
         some_card = Card("Some Card", 1, 1, "No Ability")
         some_card.energy_cost = 1
+
         player2 = self.game.players[PLAYER2_ID]
         player2.hand.append(some_card)
-        self.game.play_card(some_card, player2.player_id, location_id)
 
-        self.game.reveal_cards(self.player.player_id)
+        self.game.turn.play_card(some_card, player2.player_id, location_id)
+        self.game.turn.reveal_cards(self.player.player_id)
 
         # Get the played Star Lord card from the location
         played_starlord = None
@@ -283,8 +284,8 @@ class TestCards(unittest.TestCase):
         self.player.hand = []
         self.player.hand.append(starlord)
 
-        self.game.play_card(starlord, self.player.player_id, location_id)
-        self.game.reveal_cards(self.player.player_id)
+        self.game.turn.play_card(starlord, self.player.player_id, location_id)
+        self.game.turn.reveal_cards(self.player.player_id)
 
         # Get the played Star Lord card from the location
         played_starlord = None

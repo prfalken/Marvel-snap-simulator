@@ -1,5 +1,4 @@
 from loguru import logger
-from location import Location
 
 
 class Card:
@@ -241,16 +240,19 @@ class StarLord(Card):
     def reveal(self, game: "Game"):
         opponent_id = 1 if self.owner_id == 0 else 0
         location = game.locations[self.location_id]
+        opponend_card_played = False
         for c in location.cards:
-            if any(
-                c.owner_id == opponent_id and c.turn_played == game.current_turn
-                for c in location.cards
-            ):
-                self.power += 4
-                logger.debug(
-                    f"Star Lord : A card was played by the opponent this turn. Power +4"
-                )
-                return game
+            if c.owner_id == opponent_id and c.turn_played == game.turn.turn_id:
+                opponend_card_played = True
+                break
+
+        if opponend_card_played:
+            self.power += 4
+            logger.debug(
+                f"Star Lord : A card was played by the opponent this turn. Power +4"
+            )
+            return game
+
         return game
 
 
