@@ -36,6 +36,39 @@ class Abomination(Card):
         self.base_power = 9
         self.ability_description = "No Ability"
 
+# # class Aero(Card):
+# #     def __init__(self):
+# #         Card.__init__(self)
+# #         self.name = "Aero"
+# #         self.energy_cost = 5
+# #         self.power = 9
+# #         self.base_power = 9
+# #         self.ability_description = "On Reveal: Move the last enemy card played anywhere to this location."
+
+# #     def reveal(self, game: 'Game', owner: 'AIPlayer', location: Location):
+# #         opponent_id = 1 if owner.player_id == 0 else 0
+# #         opponent = game.players[opponent_id]
+        
+# #         if len(opponent.played_cards) == 0:
+# #             logger.debug("Aero: No enemy card to move.")
+# #             return game, owner, location
+
+#         last_opponent_card = opponent.played_cards[-1]
+#         last_opponent_card_location = game.locations[last_opponent_card.location.position]
+#         if last_opponent_card_location == location:
+#             logger.debug("Aero: The last enemy card played is already at Aero's location.")
+#             return game, owner, location
+        
+#         # if there are already 4 cards in opponents's target location, do nothing
+#         if len([card for card in game.locations[location.position].cards if card.owner == opponent_id ]) == 4:
+#             logger.debug("Aero: The target location is full.")
+#             return game, owner, location
+
+#         last_opponent_card_location.cards.remove(last_opponent_card)
+#         game.locations[self.location].cards.append(last_opponent_card)
+#         logger.debug(f"Aero reveal: {last_opponent_card.name} was moved to location {location.position}")
+#         return game, owner, location
+
 class Cyclops(Card):
     def __init__(self):
         Card.__init__(self)
@@ -196,6 +229,15 @@ class TheThing(Card):
         self.base_power = 6
         self.ability_description = "No Ability"
 
+class Wasp(Card):
+    def __init__(self):
+        Card.__init__(self)
+        self.name = "Wasp"
+        self.energy_cost = 0
+        self.power = 1
+        self.base_power = 1
+        self.ability_description = "No Ability"
+
 class YellowJacket(Card):
     def __init__(self):
         Card.__init__(self)
@@ -214,3 +256,21 @@ class YellowJacket(Card):
             return game, owner, location
         logger.debug(f"No effect triggerred for Yellow Jacket")
         return game, owner, location
+    
+class Yondu(Card):
+    def __init__(self):
+        Card.__init__(self)
+        self.name = "Yondu"
+        self.energy_cost = 1
+        self.power = 2
+        self.base_power = 2
+        self.ability_description = "On Reveal: Destroy the lowest-Cost card in your opponent’s deck."
+
+    def reveal(self, game: 'Game', owner: 'AIPlayer', location: Location):
+        opponent = 1 if owner.player_id == 0 else 0
+        opponent_deck = game.players[opponent].deck
+        lowest_cost_card = min(opponent_deck, key=lambda x: x.energy_cost)
+        opponent_deck.remove(lowest_cost_card)
+        logger.debug(f"Yondu Reveal: Player {opponent+1} lost their lowest cost card: {lowest_cost_card.name}")
+        return game, owner, location
+

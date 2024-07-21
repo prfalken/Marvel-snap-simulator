@@ -19,21 +19,21 @@ class TestGame(unittest.TestCase):
         Game.prepare_game = MagicMock()
         game = Game()
         game.all_locations = [
-            Location("Location 1", "Description 1"), 
-            Location("Location 2", "Description 2"), 
+            Location("Location 1", "Description 1"),
+            Location("Location 2", "Description 2"),
             Location("Location 3", "Description 3"),
-            ]
+        ]
 
         player1_startswith = [
             Card("Card 1", 1, 200),
             Card("Card 2", 1, 1),
             Card("Card 3", 1, 1),
-            ]
+        ]
         player2_startswith = [
             Card("Card 2", 1, 100),
             Card("Card 2", 1, 100),
             Card("Card 3", 1, 100),
-            ]
+        ]
         player1 = game.players[0]
         player2 = game.players[1]
         player1.deck = player1_startswith
@@ -43,7 +43,6 @@ class TestGame(unittest.TestCase):
         player1.hand = player1_startswith
         player2.hand = player2_startswith
         game.play_game()
-
 
     def test_play_card(self):
         game = Game()

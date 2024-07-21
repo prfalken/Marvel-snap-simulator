@@ -1,8 +1,18 @@
-
 from enums import PLAYER1_ID, PLAYER2_ID
 
+
 class Location:
-    def __init__(self, name, effect_description, effect=None, on_reveal_effect=None, no_destroy=None, can_play_card=None, end_of_turn_effect=None, position=None):
+    def __init__(
+        self,
+        name,
+        effect_description,
+        effect=None,
+        on_reveal_effect=None,
+        no_destroy=None,
+        can_play_card=None,
+        end_of_turn_effect=None,
+        position=None,
+    ):
         self.name = name
         self.effect_description = effect_description
         self.effect = effect
@@ -16,20 +26,19 @@ class Location:
         self.player2_played_card = False
         self.revealed = False
         self.position = position
-        self.powers = {
-            PLAYER1_ID: 0,
-            PLAYER2_ID: 0
-        }
+        self.powers = {PLAYER1_ID: 0, PLAYER2_ID: 0}
 
     def __str__(self):
         return f"{self.name} (Effect: {self.effect_description})"
 
     def __repr__(self):
         return f"{self.name} (Effect: {self.effect_description})"
-    
+
     def calculate_total_power(self, player_id):
         total_power = sum(card.power for card in self.cards if card.owner == player_id)
-        card_list = [(card.name, card.power) for card in self.cards if card.owner == player_id]
+        card_list = [
+            (card.name, card.power) for card in self.cards if card.owner == player_id
+        ]
         card_list.clear()
         return total_power
 
@@ -46,7 +55,7 @@ class Location:
             return 1
         else:
             return None
-        
+
     def can_play_card_at_location(card, location, current_turn, player_energy):
         # Check if the card's energy cost is less than or equal to the player's energy
         if card.energy_cost > player_energy:
@@ -61,7 +70,9 @@ class Location:
                 return False
 
         # Check if the location has a general rule that prevents the card from being played
-        if location.can_play_card and not location.can_play_card(location, current_turn):
+        if location.can_play_card and not location.can_play_card(
+            location, current_turn
+        ):
             return False
 
         # Check if the location already has 4 cards from the player
@@ -69,11 +80,12 @@ class Location:
             return False
 
         return True
-    
-    def apply_location_effect(self,game):
+
+    def apply_location_effect(self, game):
         if self.name == "Tinkerer's Workshop":
             game.players[0].energy += 1
             game.players[1].energy += 1
+
 
 def generate_all_locations():
 
@@ -86,7 +98,9 @@ def generate_all_locations():
 
         # Find the card(s) with the highest power
         highest_power = max(location.cards, key=lambda c: c.base_power).base_power
-        highest_power_cards = [c for c in location.cards if c.base_power == highest_power]
+        highest_power_cards = [
+            c for c in location.cards if c.base_power == highest_power
+        ]
 
         # Double the power of the highest power card(s)
         for c in highest_power_cards:
@@ -100,6 +114,7 @@ def generate_all_locations():
 
     def negative_zone_effect(card, player, location):
         card.power -= 3
+
     def wakanda_no_destroy(location):
         pass  # Do not destroy cards in this location
 
@@ -117,19 +132,34 @@ def generate_all_locations():
     # Generate all locations
     all_locations = [
         Location("Xandar", "Cards here have +1 Power.", xandar_effect),
-        Location("Wakanda", "Cards here can't be destroyed.", no_destroy=wakanda_no_destroy),
+        Location(
+            "Wakanda", "Cards here can't be destroyed.", no_destroy=wakanda_no_destroy
+        ),
         Location("Tinkerer's Workshop", "+1 Energy this turn."),
-        Location("Throne Room", "Card(s) here with the highest Power have their Power doubled.", effect=throne_room_effect),
+        Location(
+            "Throne Room",
+            "Card(s) here with the highest Power have their Power doubled.",
+            effect=throne_room_effect,
+        ),
         Location("The Vault", "On turn 6, cards can't be played here."),
         Location("The Big House", "4, 5, and 6-Cost cards can't be played here."),
-        Location("Stark Tower", "At the end of turn 5, give all cards here +2 Power.", end_of_turn_effect=stark_tower_end_of_turn_five),
-        Location("Negative Zone", "Cards here have -3 Power.", effect=negative_zone_effect),
-        Location("Murderworld", "At the end of turn 3, destroy all cards here.", end_of_turn_effect=murderworld_end_of_turn_three),
+        Location(
+            "Stark Tower",
+            "At the end of turn 5, give all cards here +2 Power.",
+            end_of_turn_effect=stark_tower_end_of_turn_five,
+        ),
+        Location(
+            "Negative Zone", "Cards here have -3 Power.", effect=negative_zone_effect
+        ),
+        Location(
+            "Murderworld",
+            "At the end of turn 3, destroy all cards here.",
+            end_of_turn_effect=murderworld_end_of_turn_three,
+        ),
         # Add the remaining locations with their respective effects
         # ...
     ]
     return all_locations
-
 
 
 class TheVault(Location):

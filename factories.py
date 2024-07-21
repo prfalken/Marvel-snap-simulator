@@ -1,6 +1,7 @@
 from cards import Card
 from loguru import logger
 
+
 def generate_all_cards():
     all_cards = [obj() for obj in Card.__subclasses__()]
 
