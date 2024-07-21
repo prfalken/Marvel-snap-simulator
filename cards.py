@@ -111,6 +111,21 @@ class Bishop(Card):
         return game
 
 
+class BlackPanther(Card):
+    def __init__(self):
+        Card.__init__(self)
+        self.name = "Black Panther"
+        self.energy_cost = 5
+        self.power = 4
+        self.base_power = 4
+        self.ability_description = "On Reveal: Double this card’s Power."
+
+    def reveal(self, game: "Game"):
+        self.power *= 2
+        logger.debug(f"Black Panther: Power doubled to {self.power}")
+        return game
+
+
 class Cyclops(Card):
     def __init__(self):
         Card.__init__(self)

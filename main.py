@@ -6,7 +6,7 @@ from loguru import logger
 def main():
     logger.info("Started")
 
-    for _ in range(0, 1):
+    for _ in range(0, 1000):
         game = Game()
         game.play_game()
 
