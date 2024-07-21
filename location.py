@@ -34,9 +34,11 @@ class Location:
         return f"{self.name} (Effect: {self.effect_description})"
 
     def calculate_total_power(self, player_id):
-        total_power = sum(card.power for card in self.cards if card.owner == player_id)
+        total_power = sum(
+            card.power for card in self.cards if card.owner_id == player_id
+        )
         card_list = [
-            (card.name, card.power) for card in self.cards if card.owner == player_id
+            (card.name, card.power) for card in self.cards if card.owner_id == player_id
         ]
         card_list.clear()
         return total_power
@@ -46,7 +48,7 @@ class Location:
 
         for card in self.cards:
             power = card.power
-            player_powers[card.owner] += power
+            player_powers[card.owner_id] += power
 
         if player_powers[0] > player_powers[1]:
             return 0
@@ -75,7 +77,7 @@ class Location:
             return False
 
         # Check if the location already has 4 cards from the player
-        if sum(1 for c in location.cards if c.owner == card.owner) >= 4:
+        if sum(1 for c in location.cards if c.owner_id == card.owner_id) >= 4:
             return False
 
         return True

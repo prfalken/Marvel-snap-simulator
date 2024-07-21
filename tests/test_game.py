@@ -88,8 +88,8 @@ class TestGame(unittest.TestCase):
         player = game.players[PLAYER1_ID]
         player.hand.append(card)
         player.played_cards.append(card)
-        card.location = 0
-        card.owner = PLAYER1_ID
+        card.location_id = 0
+        card.owner_id = PLAYER1_ID
         location = game.locations[0]
         location.cards.append(card)
         game.reveal_cards(PLAYER1_ID)

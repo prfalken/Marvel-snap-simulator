@@ -4,6 +4,7 @@ import cards
 import factories
 from cards import Card
 from game import Game
+from location import Location
 from enums import PLAYER1_ID, PLAYER2_ID
 from loguru import logger
 
@@ -33,7 +34,7 @@ class TestCards(unittest.TestCase):
         assert abo.power == 9
         assert abo.base_power == 9
         assert abo.ability_description == "No Ability"
-        assert abo.owner == None
+        assert abo.owner_id == None
 
     def test_cyclops(self):
         cyc = cards.Cyclops()
@@ -128,6 +129,7 @@ class TestCards(unittest.TestCase):
         # Create an Iron Man card
         ironman = Card()
         location_id = 0
+        self.game.locations[location_id] = Location("Location 1", "None", position=0)
         for card in self.all_cards:
             if card.name == "Iron Man":
                 ironman = card

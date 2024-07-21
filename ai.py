@@ -20,20 +20,22 @@ class AIPlayer:
         valid_plays = []
         for card_index, card in enumerate(self.hand):
             if card.energy_cost <= self.energy:
-                for location_index, location in enumerate(self.game.locations):
+                for location_id, location in enumerate(self.game.locations):
                     if Location.can_play_card_at_location(
                         card, location, self.game.current_turn, self.energy
                     ):
-                        valid_plays.append((card_index, location_index))
+                        valid_plays.append((card_index, location_id))
 
         if valid_plays:
-            chosen_card_index, chosen_location_index = random.choice(valid_plays)
-            return [chosen_card_index], [chosen_location_index]
+            chosen_card_index, chosen_location_id = random.choice(valid_plays)
+            return [chosen_card_index], [chosen_location_id]
         else:
             return None, None
 
     def draw_starting_deck(self, all_cards):
         deck = random.sample(all_cards, 12)
+        for card in deck:
+            card.owner_id = self.player_id
         return deck
 
     def draw_starting_hand(self, deck):
