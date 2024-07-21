@@ -10,7 +10,7 @@ from location import Location
 from enums import PLAYER1_ID, PLAYER2_ID
 
 logger.remove()
-# logger.add(sys.stderr, level="INFO")
+logger.add(sys.stderr, level="DEBUG")
 
 
 class TestGame(unittest.TestCase):

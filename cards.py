@@ -206,8 +206,11 @@ class YellowJacket(Card):
         self.ability_description = "On Reveal: Afflict your other cards here with -1 Power."
 
     def reveal(self, game: 'Game', owner: 'AIPlayer', location: Location):
-        for c in location.cards:
-            if c != self:
-                c.power -= 1
-                logger.debug(f"{c.name} has been afflicted by Yellow Jacket. Power -1")
+        if not self.revealed:
+            for c in location.cards:
+                if c != self and c.owner == owner.player_id:
+                    c.power -= 1
+                    logger.debug(f"{c.name} has been afflicted by Yellow Jacket. Power -1")
+            return game, owner, location
+        logger.debug(f"No effect triggerred for Yellow Jacket")
         return game, owner, location

@@ -149,15 +149,7 @@ class Game:
                     location = self.locations[card.location]
                     location_card = next((c for c in location.cards if c.owner == card.owner and c.name == card.name and c.location == card.location), None)
                     self, player, location = location_card.reveal(self, player, location)
-                    if card.ability is not None and card.ability.ability_type == "On Reveal":
-                        power_bonus = card.ability.effect(card, self, player_id, location)
-                        if power_bonus is not None and power_bonus > 0:
-                            card.power += power_bonus
-                            # Update the location card's power value as well
-                            if location_card is not None:
-                                location_card.power = card.power  # Update the power of the card in location.cards
-                                location.powers[player_id] += card.power # Update the total power of the location
-                            logger.debug(f"Card {card.name} has increased from {card.base_power} to {card.power}")
+                    location.powers[player_id] += card.power # Update the total power of the location
                     card.revealed = True
 
     def apply_ongoing_abilities(self):
