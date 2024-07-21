@@ -209,7 +209,7 @@ class Game:
     def display_game_state(self):
         self.display_deck_and_hands()
 
-        logger.debug("\nCards at each location:")
+        logger.debug("Cards at each location:")
 
         player1_cards_by_location = []
         player2_cards_by_location = []
@@ -225,9 +225,9 @@ class Game:
             player2_cards += [''] * (max_cards - len(player2_cards))
 
             if location.revealed:
-                logger.debug(f"{location.name} - {location.effect_description}")
+                logger.debug(f"{location.name} - Position {location.position} - {location.effect_description}")
             else:
-                logger.debug(f"\nUnrevealed Location")
+                logger.debug(f"Unrevealed Location")
             logger.debug(f"Player 1: {player1_cards}")
             logger.debug(f"Player 2: {player2_cards}")
 

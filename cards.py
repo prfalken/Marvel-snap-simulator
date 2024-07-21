@@ -116,6 +116,25 @@ class Shocker(Card):
         self.power = 3
         self.base_power = 3
         self.ability_description = "No Ability"
+
+class StarLord(Card):
+    def __init__(self):
+        Card.__init__(self)
+        self.name = "Star Lord"
+        self.energy_cost = 2
+        self.power = 2
+        self.base_power = 2
+        self.ability_description = "On Reveal: If your opponent played a card here this turn, +3 Power."
+
+    def reveal(self, game: 'Game', owner: 'AIPlayer', location: Location):
+        opponent = 1 if owner.player_id == 0 else 0
+        for c in location.cards:
+            if any(c.owner == opponent and c.turn_played == game.current_turn for c in location.cards):
+                self.power += 3
+                logger.debug(f"Star Lord : A card was played by the opponent this turn. Power +3")
+                return game, owner, location
+        return game, owner, location
+
 class ThePunisher(Card):
     def __init__(self):
         Card.__init__(self)

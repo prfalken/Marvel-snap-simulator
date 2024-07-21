@@ -4,11 +4,11 @@ import cards
 import factories
 from card import Card
 from game import Game
-from enums import PLAYER1_ID
+from enums import PLAYER1_ID, PLAYER2_ID
 from loguru import logger
 
 logger.remove()
-# logger.add(sys.stderr, level="DEBUG")
+logger.add(sys.stderr, level="DEBUG")
 
 class TestCards(unittest.TestCase):
 
@@ -211,3 +211,56 @@ class TestCards(unittest.TestCase):
         # Check that player has 1 Sentinel card in hand        
         self.assertEqual(len(self.player.hand), 1)
         self.assertEqual(self.player.hand[0].name, "Sentinel")
+
+    def test_starlord_triggered(self):
+        self.clear_locations()
+
+        # Create a Star Lord card
+        starlord = cards.StarLord()
+        location_id = 0
+        starlord.energy_cost = 1
+
+        # Add Star Lord to player's hand
+        self.player.hand = []
+        self.player.hand.append(starlord)
+
+        self.game.play_card(starlord, self.player.player_id, location_id)
+
+        some_card = Card("Some Card", 1, 1, "No Ability")
+        some_card.energy_cost = 1
+        player2 = self.game.players[PLAYER2_ID]
+        player2.hand.append(some_card)
+        self.game.play_card(some_card, player2.player_id, location_id)
+
+        self.game.reveal_cards(self.player.player_id)
+
+        # Get the played Star Lord card from the location
+        played_starlord = None
+        for card in self.game.locations[location_id].cards:
+            if card.name == "Star Lord":
+                played_starlord = card
+
+        self.assertEqual(played_starlord.power, 5)
+
+    def test_starlord_not_triggered(self):
+        self.clear_locations()
+
+        # Create a Star Lord card
+        starlord = cards.StarLord()
+        location_id = 0
+        starlord.energy_cost = 1
+
+        # Add Star Lord to player's hand
+        self.player.hand = []
+        self.player.hand.append(starlord)
+
+        self.game.play_card(starlord, self.player.player_id, location_id)
+        self.game.reveal_cards(self.player.player_id)
+
+        # Get the played Star Lord card from the location
+        played_starlord = None
+        for card in self.game.locations[location_id].cards:
+            if card.name == "Star Lord":
+                played_starlord = card
+
+        self.assertEqual(played_starlord.power, 2)
