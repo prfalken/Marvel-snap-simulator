@@ -2,7 +2,7 @@ import random
 import copy
 from location import Location, generate_all_locations
 from ai import AIPlayer
-from data import update_deck_data, save_deck_data, load_deck_data, get_average_power
+from data import update_deck_data, save_deck_data, load_deck_data
 from factories import generate_all_cards
 from enums import PLAYER1_ID, PLAYER2_ID, Winner
 

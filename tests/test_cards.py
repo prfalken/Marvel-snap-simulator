@@ -75,7 +75,7 @@ class TestCards(unittest.TestCase):
             if card.name == "Hawkeye":
                 played_hawkeye = card
 
-        self.assertEqual(played_hawkeye.power, 3)
+        self.assertEqual(played_hawkeye.power, 4)
  
     def test_hawkeye_not_triggered(self):
         self.clear_locations()
@@ -185,7 +185,7 @@ class TestCards(unittest.TestCase):
                 played_medusa = card
 
         # Check the power of the played Medusa card 
-        self.assertEqual(played_medusa.power, 4)
+        self.assertEqual(played_medusa.power, 5)
 
     def test_Sentinel(self):
         self.clear_locations()
@@ -240,7 +240,7 @@ class TestCards(unittest.TestCase):
             if card.name == "Star Lord":
                 played_starlord = card
 
-        self.assertEqual(played_starlord.power, 5)
+        self.assertEqual(played_starlord.power, 6)
 
     def test_starlord_not_triggered(self):
         self.clear_locations()

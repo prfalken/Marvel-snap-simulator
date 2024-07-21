@@ -60,6 +60,7 @@ def printwinrate(decks_data):
 
     for idx, (deck_id, deck_data) in enumerate(ranked_decks, 1):
         print(f"{idx}. Deck ID: {deck_id}")
+        print(f"   Cards: {', '.join(deck_data['cards'])}")
         print(f"   Winrate: {winrate(deck_data) * 100:.2f}%")
         print(f"   Wins: {deck_data['wins']}")
         print(f"   Losses: {deck_data['losses']}")

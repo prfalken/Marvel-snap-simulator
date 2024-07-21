@@ -9,12 +9,12 @@ from loguru import logger
 def main():
     logger.info('Started')
 
-    for i in range (0,1):
+    for i in range (0,1000):
         game = Game()
         game.play_game()
 
     decks_data = load_deck_data('decks_data.json')
-    # printwinrate(decks_data)
+    printwinrate(decks_data)
 
     logger.info('Finished')
 

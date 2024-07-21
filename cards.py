@@ -35,7 +35,7 @@ class Hawkeye(Card):
         self.energy_cost = 1
         self.power = 1
         self.base_power = 1
-        self.ability_description = "On Reveal: If you play a card here next turn, +2 Power."
+        self.ability_description = "On Reveal: If you play a card here next turn, +3 Power."
         self.number_of_cards_here = 0
         self.hawkeye_triggered = False
 
@@ -48,7 +48,7 @@ class Hawkeye(Card):
 
         if self.revealed and not self.hawkeye_triggered and game.current_turn == self.turn_played + 1:
             if len(location.cards) > self.number_of_cards_here:
-                self.power += 2
+                self.power += 3
                 logger.debug(f"{self.name} was played last turn. Power +2")
                 self.hawkeye_triggered = True
                 return game, owner, location
@@ -76,12 +76,12 @@ class Medusa(Card):
         self.energy_cost = 2
         self.power = 2
         self.base_power = 2
-        self.ability_description = "On Reveal: If this is at the middle Location, +2 Power."
+        self.ability_description = "On Reveal: If this is at the middle Location, +3 Power."
 
     def reveal(self, game: 'Game', owner: 'AIPlayer', location: Location):
         if self.location == 1:
-            logger.debug(f"{self.name} is at the middle location. Power +2")
-            self.power += 2
+            logger.debug(f"{self.name} is at the middle location. Power +3")
+            self.power += 3
         return game, owner, location
 
 class MistyKnight(Card):
@@ -133,14 +133,14 @@ class StarLord(Card):
         self.energy_cost = 2
         self.power = 2
         self.base_power = 2
-        self.ability_description = "On Reveal: If your opponent played a card here this turn, +3 Power."
+        self.ability_description = "On Reveal: If your opponent played a card here this turn, +4 Power."
 
     def reveal(self, game: 'Game', owner: 'AIPlayer', location: Location):
         opponent = 1 if owner.player_id == 0 else 0
         for c in location.cards:
             if any(c.owner == opponent and c.turn_played == game.current_turn for c in location.cards):
                 self.power += 3
-                logger.debug(f"Star Lord : A card was played by the opponent this turn. Power +3")
+                logger.debug(f"Star Lord : A card was played by the opponent this turn. Power +4")
                 return game, owner, location
         return game, owner, location
 
@@ -149,8 +149,8 @@ class ThePunisher(Card):
         Card.__init__(self)
         self.name = "The Punisher"
         self.energy_cost = 3
-        self.power = 2
-        self.base_power = 2
+        self.power = 3
+        self.base_power = 3
         self.ability_description = "Ongoing: +1 Power for each opposing card at this Location."
 
     def ongoing(self, game: 'Game', owner: 'AIPlayer', location: Location):
