@@ -13,6 +13,7 @@ class AIPlayer:
         self.energy = 1
         self.deck = self.draw_starting_deck(all_cards)
         self.starting_deck = copy.deepcopy(self.deck)
+        self.discard_stack = []
         self.hand = self.draw_starting_hand(self.deck)
         self.played_cards = []
 

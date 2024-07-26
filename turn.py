@@ -28,7 +28,7 @@ class Turn:
             card_copy.owner_id = player_id
             card_copy.location_id = location_id
             location.cards.append(card_copy)
-            logger.debug(
+            logger.info(
                 f"Card played by player {player_id+1}: {card_copy} on Location position {location_id}"
             )
 
@@ -112,7 +112,9 @@ class Turn:
             for location in self.game.locations:
                 for card in location.cards:
                     if card.owner_id == player_id:
-                        self.game = card.on_any_card_reveal_effect(self.game)
+                        self.game, card = card.on_any_card_reveal_effect(
+                            self.game, card
+                        )
 
     def end_of_turn(self):
         # Reset energy for each player according to the current turn

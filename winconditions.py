@@ -15,8 +15,8 @@ class WinConditions:
         player2_total_power = sum(
             location.powers[PLAYER2_ID] for location in self.locations
         )
-        logger.info(f"Player 1 had a total power of {player1_total_power}")
-        logger.info(f"Player 2 had a total power of {player2_total_power}")
+        logger.debug(f"Player 1 had a total power of {player1_total_power}")
+        logger.debug(f"Player 2 had a total power of {player2_total_power}")
 
         player1_wins = 0
         player2_wins = 0
@@ -26,8 +26,8 @@ class WinConditions:
             elif location.powers[PLAYER2_ID] < location.powers[PLAYER2_ID]:
                 player2_wins += 1
 
-        logger.info(f"Total won locations for Player 1: {player1_wins}")
-        logger.info(f"Total won locations for Player 2: {player2_wins}")
+        logger.debug(f"Total won locations for Player 1: {player1_wins}")
+        logger.debug(f"Total won locations for Player 2: {player2_wins}")
 
         if player1_wins > player2_wins:
             return Winner.PLAYER1.value

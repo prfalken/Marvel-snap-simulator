@@ -53,25 +53,6 @@ class TestTurn(unittest.TestCase):
         turn.play_turn()
         turn.reveal_cards.assert_has_calls([call(1), call(0)])
 
-    def test_end_of_turn_reset(self):
-        game = Game()
-        turn = Turn(1, game)
-        turn.end_of_turn()
-
-        # Assert that player's energy is reset
-        self.assertEqual(turn.game.players[0].energy, 2)
-        self.assertEqual(turn.game.players[1].energy, 2)
-
-        # Assert that location's player played card flags are reset
-        self.assertFalse(game.locations[0].player1_played_card)
-        self.assertFalse(game.locations[0].player2_played_card)
-        self.assertFalse(game.locations[1].player1_played_card)
-        self.assertFalse(game.locations[1].player2_played_card)
-        self.assertFalse(game.locations[2].player1_played_card)
-        self.assertFalse(game.locations[2].player2_played_card)
-
-        # Add assertions for the expected behavior of the end_of_turn method
-
     def test_end_of_turn(self):
         game = Game()
         turn = Turn(1, game)

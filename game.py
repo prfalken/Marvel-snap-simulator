@@ -77,6 +77,8 @@ class Game:
                         )
 
     def play_game(self):
+        self.displayer.display_deck_and_hands()
+
         for turn_id in range(6):  # Loop through the 6 turns
             self.current_turn = turn_id
             self.turn = Turn(turn_id, self)

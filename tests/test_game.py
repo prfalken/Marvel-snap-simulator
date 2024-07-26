@@ -6,6 +6,7 @@ from loguru import logger
 from game import Game
 from cards import Card
 from location import Location
+from turn import Turn
 
 from enums import PLAYER1_ID, PLAYER2_ID
 
@@ -128,3 +129,14 @@ class TestGame(unittest.TestCase):
         game.apply_location_effects(1)
 
         # Add assertions for the expected behavior when no location effects are present
+
+    def test_destroy_card(self):
+        game = Game()
+        card = Card("Card 1", 1, 1)
+        player = game.players[PLAYER1_ID]
+        player.hand.append(card)
+        turn = Turn(1, game)
+        turn.play_card(card, 0, 0)
+        card.destroy(game)
+        for location in game.locations:
+            self.assertNotIn(card, location.cards)
