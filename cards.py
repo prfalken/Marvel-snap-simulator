@@ -12,6 +12,7 @@ class Card:
         ability=None,
     ):
         self.name = name
+        self.ownable = True
         self.game = None
         self.energy_cost = energy_cost
         self.power = power
@@ -347,6 +348,7 @@ class Tiger(Card):
     def __init__(self):
         Card.__init__(self)
         self.name = "Tiger"
+        self.ownable = False
         self.energy_cost = 5
         self.power = 8
         self.base_power = 8
@@ -748,6 +750,7 @@ class Rock(Card):
     def __init__(self):
         Card.__init__(self)
         self.name = "Rock"
+        self.ownable = False
         self.energy_cost = 1
         self.power = 0
         self.base_power = 0

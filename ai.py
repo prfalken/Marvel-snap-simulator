@@ -19,7 +19,10 @@ class AIPlayer:
 
     def choose_card_and_location(self):
         valid_plays = []
-        for card_index, card in enumerate(self.hand):
+        hand_ordered_by_energy_cost = sorted(
+            self.hand, key=lambda card: card.energy_cost
+        )
+        for card_index, card in enumerate(hand_ordered_by_energy_cost):
             if card.energy_cost <= self.energy:
                 for location_id, location in enumerate(self.game.locations):
                     if Location.can_play_card_at_location(

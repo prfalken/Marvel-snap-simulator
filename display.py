@@ -67,10 +67,12 @@ class Displayer:
         # Display decks and hands of both players
         for player_id in PLAYER1_ID, PLAYER2_ID:
             deck = [
-                f"{card.name} ({card.power})" for card in self.players[player_id].deck
+                f"{card.name} ({card.energy_cost}-{card.power})"
+                for card in self.players[player_id].deck
             ]
             logger.debug(f"Player {player_id} Deck: {deck}")
             hand = [
-                f"{card.name} ({card.power})" for card in self.players[player_id].hand
+                f"{card.name} ({card.energy_cost}-{card.power})"
+                for card in self.players[player_id].hand
             ]
             logger.debug(f"Player {player_id} Hand: {hand}")

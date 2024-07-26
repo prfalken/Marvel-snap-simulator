@@ -4,21 +4,8 @@ from loguru import logger
 
 def generate_all_cards():
     all_cards = [obj() for obj in Card.__subclasses__()]
-
-    # all_cards = [
-    #     cards.Abomination(),
-    #     cards.Cyclops(),
-    #     cards.Hawkeye(),
-    #     cards.Hulk(),
-    #     cards.IronMan(),
-    #     cards.Medusa(),
-    #     cards.MistyKnight(),
-    #     cards.ThePunisher(),
-    #     cards.Quicksilver(),
-    #     cards.Sentinel(),
-    #     cards.Shocker(),
-    #     cards.StarLord(),
-    #     cards.TheThing(),
-    # ]
+    for card in all_cards:
+        if not card.ownable:
+            all_cards.remove(card)
 
     return all_cards
