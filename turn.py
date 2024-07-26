@@ -77,22 +77,14 @@ class Turn:
             player.played_cards = []
             player.played_card_locations = []
 
-            chosen_card_indices, location_indices = player.choose_card_and_location()
+            chosen_card_index, location_index = player.choose_card_and_location()
 
-            if chosen_card_indices is not None and location_indices is not None:
-                for card_index, location_id in zip(
-                    chosen_card_indices, location_indices
-                ):
+            if chosen_card_index is not None and location_index is not None:
+                for card_index, location_id in zip(chosen_card_index, location_index):
                     card = player.hand[card_index]
-                    if card.energy_cost <= player.energy:
-                        self.play_card(card, player_id, location_id)
-                        player.played_cards.append(card)
-                        player.played_card_locations.append(location_id)
-                    else:
-                        logger.debug(
-                            f"{player_id+1} cannot play {card.name} yet. It costs more energy than the current turn."
-                        )
-                        break
+                    self.play_card(card, player_id, location_id)
+                    player.played_cards.append(card)
+                    player.played_card_locations.append(location_id)
             else:
                 break
 

@@ -22,17 +22,16 @@ class AIPlayer:
         hand_ordered_by_energy_cost = sorted(
             self.hand, key=lambda card: card.energy_cost
         )
-        for card_index, card in enumerate(hand_ordered_by_energy_cost):
+        for card in hand_ordered_by_energy_cost:
             if card.energy_cost <= self.energy:
                 for location_id, location in enumerate(self.game.locations):
                     if Location.can_play_card_at_location(
                         card, location, self.game.current_turn, self.energy
                     ):
-                        valid_plays.append((card_index, location_id))
+                        valid_plays.append((card, location_id))
 
         if valid_plays:
-            chosen_card_index, chosen_location_id = random.choice(valid_plays)
-            return [chosen_card_index], [chosen_location_id]
+            return valid_plays[0], valid_plays[1]
         else:
             return None, None
 
