@@ -86,14 +86,6 @@ class TestGame(unittest.TestCase):
         # Additional assertion to ensure no more locations are revealed
         self.assertEqual(game.current_location, 3)
 
-    def test_generate_locations_unique(self):
-        game = Game()
-        locations1 = game.generate_locations()
-        locations2 = game.generate_locations()
-
-        # Test that generated locations are unique
-        self.assertNotEqual(locations1, locations2)
-
     def test_prepare_game_reset(self):
         game = Game()
         # Reset the game

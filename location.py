@@ -57,7 +57,7 @@ class Location:
         else:
             return None
 
-    def can_play_card_at_location(card, location, current_turn, player_energy):
+    def can_play_card_at_location(self, card, location, current_turn, player_energy):
         # Check if the card's energy cost is less than or equal to the player's energy
         if card.energy_cost > player_energy:
             return False

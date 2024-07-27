@@ -77,16 +77,12 @@ class Turn:
             player.played_cards = []
             player.played_card_locations = []
 
-            chosen_card_index, location_index = player.choose_card_and_location()
-
-            if chosen_card_index is not None and location_index is not None:
-                for card_index, location_id in zip(chosen_card_index, location_index):
-                    card = player.hand[card_index]
+            plays = player.choose_plays()
+            if plays:
+                for card, location_id in plays:
                     self.play_card(card, player_id, location_id)
                     player.played_cards.append(card)
                     player.played_card_locations.append(location_id)
-            else:
-                break
 
         # Determine the order in which players reveal cards
         win_conditions = WinConditions(self.game.locations, self.game.players)

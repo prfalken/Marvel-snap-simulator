@@ -17,23 +17,21 @@ class AIPlayer:
         self.hand = self.draw_starting_hand(self.deck)
         self.played_cards = []
 
-    def choose_card_and_location(self):
+    def choose_plays(self):
         valid_plays = []
         hand_ordered_by_energy_cost = sorted(
             self.hand, key=lambda card: card.energy_cost
         )
         for card in hand_ordered_by_energy_cost:
             if card.energy_cost <= self.energy:
-                for location_id, location in enumerate(self.game.locations):
-                    if Location.can_play_card_at_location(
+                for location in self.game.locations:
+                    if location.can_play_card_at_location(
                         card, location, self.game.current_turn, self.energy
                     ):
-                        valid_plays.append((card, location_id))
+                        valid_plays.append((card, location.position))
+                        self.energy -= card.energy_cost
 
-        if valid_plays:
-            return valid_plays[0], valid_plays[1]
-        else:
-            return None, None
+        return valid_plays
 
     def draw_starting_deck(self, all_cards):
         deck = random.sample(all_cards, 12)

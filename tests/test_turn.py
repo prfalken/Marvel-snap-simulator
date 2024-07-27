@@ -13,22 +13,21 @@ class TestTurn(unittest.TestCase):
         turn = Turn(1, game)
 
         card = Card("Card 1", 1, 1)
-        player_id = 0
-        location_number = 0
-        player = game.players[player_id]
+        location_id = 0
+        player = game.players[PLAYER1_ID]
         player.hand.append(card)
 
         # Test playing a card with sufficient energy
-        turn.play_card(card, player_id, location_number)
-        self.assertEqual(len(game.locations[location_number].cards), 1)
+        turn.play_card(card, PLAYER1_ID, location_id)
+        self.assertEqual(len(game.locations[location_id].cards), 1)
         self.assertEqual(player.energy, 0)
 
         # Test playing a card with insufficient energy
         card2 = Card("Card 2", 10)
         player.hand.append(card2)
-        turn.play_card(card2, player_id, location_number)
-        self.assertEqual(len(game.locations[location_number].cards), 1)
-        self.assertEqual(game.players[player_id].energy, 0)
+        turn.play_card(card2, PLAYER1_ID, location_id)
+        self.assertEqual(len(game.locations[location_id].cards), 1)
+        self.assertEqual(game.players[PLAYER1_ID].energy, 0)
 
     def test_reveal_cards(self):
         game = Game()
@@ -64,14 +63,14 @@ class TestTurn(unittest.TestCase):
         turn = Turn(1, game)
         card = Card("Card 1", 5)
         player_id = 0
-        location_number = 0
+        location_id = 0
 
         # Set player's energy to 0
         game.players[player_id].energy = 0
 
         # Test playing a card with insufficient energy
-        turn.play_card(card, player_id, location_number)
-        self.assertEqual(len(game.locations[location_number].cards), 0)
+        turn.play_card(card, player_id, location_id)
+        self.assertEqual(len(game.locations[location_id].cards), 0)
         self.assertEqual(game.players[player_id].energy, 0)
 
     def test_play_turn_no_cards(self):
